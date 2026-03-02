@@ -1,0 +1,741 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import { ChevronRight, RotateCcw, Upload, X } from 'lucide-react'
+import type { Agent } from '@/lib/types'
+import { useSettings } from '@/app/settings-provider'
+import { AgentAvatar } from '@/components/AgentAvatar'
+
+// ---------------------------------------------------------------------------
+// Accent color presets
+// ---------------------------------------------------------------------------
+
+const ACCENT_PRESETS = [
+  { label: 'Gold', value: '#F5C518' },
+  { label: 'Blue', value: '#3B82F6' },
+  { label: 'Green', value: '#22C55E' },
+  { label: 'Red', value: '#EF4444' },
+  { label: 'Orange', value: '#F97316' },
+  { label: 'Purple', value: '#A855F7' },
+  { label: 'Pink', value: '#EC4899' },
+  { label: 'Teal', value: '#14B8A6' },
+  { label: 'Cyan', value: '#06B6D4' },
+  { label: 'Indigo', value: '#6366F1' },
+  { label: 'Rose', value: '#F43F5E' },
+  { label: 'Lime', value: '#84CC16' },
+]
+
+// ---------------------------------------------------------------------------
+// Image resize helper (Canvas API → 200px max dimension, base64 JPEG)
+// ---------------------------------------------------------------------------
+
+function resizeImage(file: File, maxSize: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const reader = new FileReader()
+    reader.onload = () => {
+      img.onload = () => {
+        const scale = Math.min(maxSize / img.width, maxSize / img.height, 1)
+        const w = Math.round(img.width * scale)
+        const h = Math.round(img.height * scale)
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, w, h)
+        resolve(canvas.toDataURL('image/jpeg', 0.85))
+      }
+      img.onerror = reject
+      img.src = reader.result as string
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Settings page
+// ---------------------------------------------------------------------------
+
+export default function SettingsPage() {
+  const {
+    settings,
+    setAccentColor,
+    setManorName,
+    setManorSubtitle,
+    setManorEmoji,
+    setManorIcon,
+    setAgentOverride,
+    clearAgentOverride,
+    resetAll,
+  } = useSettings()
+
+  const [agents, setAgents] = useState<Agent[]>([])
+  const [expandedAgent, setExpandedAgent] = useState<string | null>(null)
+  const [nameValue, setNameValue] = useState(settings.manorName ?? '')
+  const [subtitleValue, setSubtitleValue] = useState(settings.manorSubtitle ?? '')
+  const [emojiValue, setEmojiValue] = useState(settings.manorEmoji ?? '')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const manorIconInputRef = useRef<HTMLInputElement>(null)
+
+  // Sync local input values when settings change externally (e.g., reset)
+  useEffect(() => {
+    setNameValue(settings.manorName ?? '')
+    setSubtitleValue(settings.manorSubtitle ?? '')
+    setEmojiValue(settings.manorEmoji ?? '')
+  }, [settings.manorName, settings.manorSubtitle, settings.manorEmoji])
+
+  // Fetch agents
+  useEffect(() => {
+    fetch('/api/agents')
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json()
+      })
+      .then((data: unknown) => {
+        if (Array.isArray(data)) setAgents(data as Agent[])
+      })
+      .catch(() => setAgents([]))
+  }, [])
+
+  async function handleManorIconUpload(file: File) {
+    try {
+      const dataUrl = await resizeImage(file, 200)
+      setManorIcon(dataUrl)
+    } catch {
+      // silently fail — user can retry
+    }
+  }
+
+  async function handleImageUpload(agentId: string, file: File) {
+    try {
+      const dataUrl = await resizeImage(file, 200)
+      setAgentOverride(agentId, { profileImage: dataUrl })
+    } catch {
+      // silently fail — user can retry
+    }
+  }
+
+  return (
+    <div
+      className="h-full overflow-y-auto"
+      style={{ background: 'var(--bg)' }}
+    >
+      <div
+        style={{
+          maxWidth: 600,
+          margin: '0 auto',
+          padding: 'var(--space-6) var(--space-4) var(--space-12)',
+        }}
+      >
+        {/* Page header */}
+        <h1
+          style={{
+            fontSize: 'var(--text-title1)',
+            fontWeight: 'var(--weight-bold)',
+            letterSpacing: 'var(--tracking-tight)',
+            color: 'var(--text-primary)',
+            margin: '0 0 var(--space-8)',
+          }}
+        >
+          Settings
+        </h1>
+
+        {/* ── Section 1: Accent Color ── */}
+        <section style={{ marginBottom: 'var(--space-8)' }}>
+          <div
+            style={{
+              fontSize: 'var(--text-caption1)',
+              fontWeight: 'var(--weight-semibold)',
+              letterSpacing: 'var(--tracking-wide)',
+              textTransform: 'uppercase',
+              color: 'var(--text-tertiary)',
+              padding: '0 var(--space-4) var(--space-2)',
+            }}
+          >
+            Accent Color
+          </div>
+          <div
+            style={{
+              background: 'var(--material-regular)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--separator)',
+              padding: 'var(--space-4)',
+            }}
+          >
+            {/* Preset swatches */}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 'var(--space-2)',
+                marginBottom: 'var(--space-3)',
+              }}
+            >
+              {ACCENT_PRESETS.map((preset) => {
+                const isActive = settings.accentColor === preset.value
+                return (
+                  <button
+                    key={preset.value}
+                    onClick={() => setAccentColor(preset.value)}
+                    aria-label={preset.label}
+                    title={preset.label}
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      background: preset.value,
+                      border: isActive ? '2px solid var(--text-primary)' : '2px solid transparent',
+                      outline: isActive ? `2px solid ${preset.value}` : 'none',
+                      outlineOffset: 2,
+                      cursor: 'pointer',
+                      transition: 'all 100ms var(--ease-smooth)',
+                    }}
+                  />
+                )
+              })}
+            </div>
+
+            {/* Custom color picker + Reset */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)',
+                  fontSize: 'var(--text-footnote)',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                }}
+              >
+                Custom:
+                <input
+                  type="color"
+                  value={settings.accentColor ?? '#F5C518'}
+                  onChange={(e) => setAccentColor(e.target.value)}
+                  style={{
+                    width: 28,
+                    height: 28,
+                    border: 'none',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                    background: 'none',
+                    padding: 0,
+                  }}
+                />
+              </label>
+              {settings.accentColor && (
+                <button
+                  onClick={() => setAccentColor(null)}
+                  style={{
+                    fontSize: 'var(--text-footnote)',
+                    color: 'var(--system-blue)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  Reset to Default
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Section 2: Branding ── */}
+        <section style={{ marginBottom: 'var(--space-8)' }}>
+          <div
+            style={{
+              fontSize: 'var(--text-caption1)',
+              fontWeight: 'var(--weight-semibold)',
+              letterSpacing: 'var(--tracking-wide)',
+              textTransform: 'uppercase',
+              color: 'var(--text-tertiary)',
+              padding: '0 var(--space-4) var(--space-2)',
+            }}
+          >
+            Branding
+          </div>
+          <div
+            style={{
+              background: 'var(--material-regular)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--separator)',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Name field */}
+            <div style={{ padding: 'var(--space-3) var(--space-4)' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: 'var(--text-caption1)',
+                  color: 'var(--text-tertiary)',
+                  marginBottom: 'var(--space-1)',
+                }}
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                className="apple-input"
+                placeholder="Manor"
+                value={nameValue}
+                onChange={(e) => setNameValue(e.target.value)}
+                onBlur={() => setManorName(nameValue || null)}
+                style={{
+                  width: '100%',
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--separator)',
+                }}
+              />
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--separator)' }} />
+
+            {/* Subtitle field */}
+            <div style={{ padding: 'var(--space-3) var(--space-4)' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: 'var(--text-caption1)',
+                  color: 'var(--text-tertiary)',
+                  marginBottom: 'var(--space-1)',
+                }}
+              >
+                Subtitle
+              </label>
+              <input
+                type="text"
+                className="apple-input"
+                placeholder="Command Centre"
+                value={subtitleValue}
+                onChange={(e) => setSubtitleValue(e.target.value)}
+                onBlur={() => setManorSubtitle(subtitleValue || null)}
+                style={{
+                  width: '100%',
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--separator)',
+                }}
+              />
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--separator)' }} />
+
+            {/* Icon — emoji or image */}
+            <div style={{ padding: 'var(--space-3) var(--space-4)' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: 'var(--text-caption1)',
+                  color: 'var(--text-tertiary)',
+                  marginBottom: 'var(--space-2)',
+                }}
+              >
+                Icon
+              </label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                {/* Live preview */}
+                {settings.manorIcon ? (
+                  <img
+                    src={settings.manorIcon}
+                    alt="Manor icon"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      objectFit: 'cover',
+                      boxShadow: 'var(--shadow-card)',
+                      flexShrink: 0,
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background: settings.accentColor
+                        ? `linear-gradient(135deg, ${settings.accentColor}, ${settings.accentColor}dd)`
+                        : 'linear-gradient(135deg, #f5c518, #e8b800)',
+                      boxShadow: 'var(--shadow-card)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 18,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {settings.manorEmoji ?? '\ud83c\udff0'}
+                  </div>
+                )}
+
+                {/* Emoji input */}
+                <input
+                  type="text"
+                  className="apple-input"
+                  placeholder={'\ud83c\udff0'}
+                  value={emojiValue}
+                  onChange={(e) => setEmojiValue(e.target.value)}
+                  onBlur={() => setManorEmoji(emojiValue || null)}
+                  style={{
+                    width: 60,
+                    textAlign: 'center',
+                    fontSize: 'var(--text-title2)',
+                    padding: '6px 8px',
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--separator)',
+                  }}
+                />
+
+                {/* Upload image button */}
+                <button
+                  onClick={() => manorIconInputRef.current?.click()}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--space-2)',
+                    padding: 'var(--space-2) var(--space-3)',
+                    borderRadius: 'var(--radius-sm)',
+                    background: 'var(--fill-tertiary)',
+                    color: 'var(--text-secondary)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: 'var(--text-footnote)',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Upload size={14} />
+                  Upload Image
+                </button>
+                <input
+                  ref={manorIconInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleManorIconUpload(file)
+                    e.target.value = ''
+                  }}
+                />
+
+                {/* Clear overrides */}
+                {(settings.manorIcon || settings.manorEmoji) && (
+                  <button
+                    onClick={() => {
+                      setManorIcon(null)
+                      setManorEmoji(null)
+                    }}
+                    aria-label="Reset icon"
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      background: 'var(--fill-tertiary)',
+                      color: 'var(--text-tertiary)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Section 3: Agent Customization ── */}
+        <section style={{ marginBottom: 'var(--space-8)' }}>
+          <div
+            style={{
+              fontSize: 'var(--text-caption1)',
+              fontWeight: 'var(--weight-semibold)',
+              letterSpacing: 'var(--tracking-wide)',
+              textTransform: 'uppercase',
+              color: 'var(--text-tertiary)',
+              padding: '0 var(--space-4) var(--space-2)',
+            }}
+          >
+            Agent Customization
+          </div>
+          <div
+            style={{
+              background: 'var(--material-regular)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--separator)',
+              overflow: 'hidden',
+            }}
+          >
+            {agents.map((agent, idx) => {
+              const isExpanded = expandedAgent === agent.id
+              const override = settings.agentOverrides[agent.id]
+              const hasOverride = override && (override.emoji || override.profileImage)
+
+              return (
+                <div key={agent.id}>
+                  {idx > 0 && (
+                    <div style={{ borderTop: '1px solid var(--separator)' }} />
+                  )}
+
+                  {/* Agent row — tap to expand */}
+                  <button
+                    onClick={() => setExpandedAgent(isExpanded ? null : agent.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-3)',
+                      padding: 'var(--space-3) var(--space-4)',
+                      width: '100%',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    <AgentAvatar agent={agent} size={32} borderRadius={9} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontSize: 'var(--text-body)',
+                          fontWeight: 'var(--weight-medium)',
+                          color: 'var(--text-primary)',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {agent.name}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 'var(--text-caption1)',
+                          color: 'var(--text-tertiary)',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {agent.title}
+                      </div>
+                    </div>
+                    {hasOverride && (
+                      <span
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: '50%',
+                          background: 'var(--accent)',
+                          flexShrink: 0,
+                        }}
+                      />
+                    )}
+                    <ChevronRight
+                      size={16}
+                      style={{
+                        color: 'var(--text-quaternary)',
+                        flexShrink: 0,
+                        transform: isExpanded ? 'rotate(90deg)' : 'none',
+                        transition: 'transform 150ms var(--ease-smooth)',
+                      }}
+                    />
+                  </button>
+
+                  {/* Expanded inline editor */}
+                  {isExpanded && (
+                    <div
+                      style={{
+                        padding: '0 var(--space-4) var(--space-4)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 'var(--space-3)',
+                      }}
+                    >
+                      {/* Emoji override */}
+                      <div>
+                        <label
+                          style={{
+                            display: 'block',
+                            fontSize: 'var(--text-caption1)',
+                            color: 'var(--text-tertiary)',
+                            marginBottom: 'var(--space-1)',
+                          }}
+                        >
+                          Custom Emoji
+                        </label>
+                        <input
+                          type="text"
+                          className="apple-input"
+                          placeholder={agent.emoji}
+                          value={override?.emoji ?? ''}
+                          onChange={(e) => {
+                            const val = e.target.value
+                            setAgentOverride(agent.id, {
+                              emoji: val || undefined,
+                            })
+                          }}
+                          style={{
+                            width: 80,
+                            fontSize: 'var(--text-title2)',
+                            textAlign: 'center',
+                            padding: '6px 8px',
+                            background: 'var(--bg-secondary)',
+                            border: '1px solid var(--separator)',
+                          }}
+                        />
+                      </div>
+
+                      {/* Profile image upload */}
+                      <div>
+                        <label
+                          style={{
+                            display: 'block',
+                            fontSize: 'var(--text-caption1)',
+                            color: 'var(--text-tertiary)',
+                            marginBottom: 'var(--space-1)',
+                          }}
+                        >
+                          Profile Image
+                        </label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                          <button
+                            onClick={() => {
+                              fileInputRef.current?.click()
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 'var(--space-2)',
+                              padding: 'var(--space-2) var(--space-3)',
+                              borderRadius: 'var(--radius-sm)',
+                              background: 'var(--fill-tertiary)',
+                              color: 'var(--text-secondary)',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: 'var(--text-footnote)',
+                            }}
+                          >
+                            <Upload size={14} />
+                            Upload
+                          </button>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (file) handleImageUpload(agent.id, file)
+                              e.target.value = ''
+                            }}
+                          />
+                          {override?.profileImage && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                              <img
+                                src={override.profileImage}
+                                alt="Preview"
+                                style={{
+                                  width: 32,
+                                  height: 32,
+                                  borderRadius: 8,
+                                  objectFit: 'cover',
+                                }}
+                              />
+                              <button
+                                onClick={() => setAgentOverride(agent.id, { profileImage: undefined })}
+                                aria-label="Remove image"
+                                style={{
+                                  width: 20,
+                                  height: 20,
+                                  borderRadius: '50%',
+                                  background: 'var(--fill-tertiary)',
+                                  color: 'var(--text-tertiary)',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Reset button */}
+                      {hasOverride && (
+                        <button
+                          onClick={() => clearAgentOverride(agent.id)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--space-2)',
+                            padding: 'var(--space-2) var(--space-3)',
+                            borderRadius: 'var(--radius-sm)',
+                            background: 'none',
+                            color: 'var(--system-red)',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: 'var(--text-footnote)',
+                            alignSelf: 'flex-start',
+                          }}
+                        >
+                          <RotateCcw size={14} />
+                          Reset to Default
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* ── Section 4: Reset All ── */}
+        <section>
+          <div
+            style={{
+              background: 'var(--material-regular)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--separator)',
+              padding: 'var(--space-4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <button
+              onClick={() => {
+                if (window.confirm('Reset all settings to defaults?')) {
+                  resetAll()
+                }
+              }}
+              style={{
+                padding: 'var(--space-2) var(--space-6)',
+                borderRadius: 'var(--radius-md)',
+                background: 'var(--system-red)',
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 'var(--text-body)',
+                fontWeight: 'var(--weight-semibold)',
+                transition: 'all 150ms var(--ease-spring)',
+              }}
+            >
+              Reset All Settings
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Map, MessageSquare, Clock, Brain, Columns3 } from 'lucide-react';
+import { Map, MessageSquare, Clock, Brain, Columns3, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { CronJob } from '@/lib/types';
 
@@ -24,6 +24,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/chat', label: 'Messages', icon: MessageSquare, badge: 'unread' },
   { href: '/crons', label: 'Crons', icon: Clock, badge: 'errors' },
   { href: '/memory', label: 'Memory', icon: Brain },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 // ---------------------------------------------------------------------------

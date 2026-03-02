@@ -5,12 +5,14 @@ import { NavLinks } from '@/components/NavLinks';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { MobileSidebar } from '@/components/MobileSidebar';
 import { GlobalSearch, SearchTrigger } from '@/components/GlobalSearch';
+import { useSettings } from '@/app/settings-provider';
 
 /**
  * Sidebar -- client wrapper that coordinates desktop sidebar, mobile sidebar,
  * and the Cmd+K search palette. Rendered inside layout.tsx.
  */
 export function Sidebar() {
+  const { settings } = useSettings();
   const openSearch = useCallback(() => {
     // We trigger the search modal by simulating Cmd+K.
     // Instead, we expose a controlled open state via a custom event.
@@ -35,22 +37,39 @@ export function Sidebar() {
         {/* App icon + title */}
         <div className="px-4 pt-5 pb-3">
           <div className="flex items-center gap-3">
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, #f5c518, #e8b800)',
-                boxShadow: 'var(--shadow-card)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '18px',
-                flexShrink: 0,
-              }}
-            >
-              {'\ud83c\udff0'}
-            </div>
+            {settings.manorIcon ? (
+              <img
+                src={settings.manorIcon}
+                alt=""
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  objectFit: 'cover',
+                  boxShadow: 'var(--shadow-card)',
+                  flexShrink: 0,
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  background: settings.accentColor
+                    ? `linear-gradient(135deg, ${settings.accentColor}, ${settings.accentColor}dd)`
+                    : 'linear-gradient(135deg, #f5c518, #e8b800)',
+                  boxShadow: 'var(--shadow-card)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                  flexShrink: 0,
+                }}
+              >
+                {settings.manorEmoji ?? '\ud83c\udff0'}
+              </div>
+            )}
             <div>
               <div
                 style={{
@@ -60,7 +79,7 @@ export function Sidebar() {
                   color: 'var(--text-primary)',
                 }}
               >
-                Manor
+                {settings.manorName ?? 'Manor'}
               </div>
               <div
                 style={{
@@ -69,7 +88,7 @@ export function Sidebar() {
                   letterSpacing: '0.01em',
                 }}
               >
-                Command Centre
+                {settings.manorSubtitle ?? 'Command Centre'}
               </div>
             </div>
           </div>

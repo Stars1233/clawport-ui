@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from './providers';
+import { SettingsProvider } from './settings-provider';
 import { Sidebar } from '@/components/Sidebar';
 
 export const metadata: Metadata = {
@@ -17,20 +18,22 @@ export default function RootLayout({
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <div
-            className="flex h-screen overflow-hidden"
-            style={{ background: 'var(--bg)' }}
-          >
-            {/* Client-side shell handles both desktop sidebar + mobile */}
-            <Sidebar />
+          <SettingsProvider>
+            <div
+              className="flex h-screen overflow-hidden"
+              style={{ background: 'var(--bg)' }}
+            >
+              {/* Client-side shell handles both desktop sidebar + mobile */}
+              <Sidebar />
 
-            {/* Main content */}
-            <main className="flex-1 overflow-hidden relative">
-              {/* Mobile spacer for fixed header */}
-              <div className="md:hidden" style={{ height: '48px', flexShrink: 0 }} />
-              {children}
-            </main>
-          </div>
+              {/* Main content */}
+              <main className="flex-1 overflow-hidden relative">
+                {/* Mobile spacer for fixed header */}
+                <div className="md:hidden" style={{ height: '48px', flexShrink: 0 }} />
+                {children}
+              </main>
+            </div>
+          </SettingsProvider>
         </ThemeProvider>
       </body>
     </html>

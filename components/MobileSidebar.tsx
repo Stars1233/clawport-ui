@@ -6,6 +6,7 @@ import { Menu, X } from 'lucide-react';
 import { NavLinks } from '@/components/NavLinks';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { SearchTrigger } from '@/components/GlobalSearch';
+import { useSettings } from '@/app/settings-provider';
 
 export function MobileSidebar({
   onOpenSearch,
@@ -14,6 +15,7 @@ export function MobileSidebar({
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { settings } = useSettings();
 
   // Close sidebar on route change
   useEffect(() => {
@@ -94,21 +96,37 @@ export function MobileSidebar({
 
         {/* App title */}
         <div className="flex items-center gap-2" style={{ flex: 1 }}>
-          <span
-            style={{
-              width: '24px',
-              height: '24px',
-              borderRadius: '6px',
-              background: 'linear-gradient(135deg, #f5c518, #e8b800)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '13px',
-              flexShrink: 0,
-            }}
-          >
-            {'\ud83c\udff0'}
-          </span>
+          {settings.manorIcon ? (
+            <img
+              src={settings.manorIcon}
+              alt=""
+              style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '6px',
+                objectFit: 'cover',
+                flexShrink: 0,
+              }}
+            />
+          ) : (
+            <span
+              style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '6px',
+                background: settings.accentColor
+                  ? `linear-gradient(135deg, ${settings.accentColor}, ${settings.accentColor}dd)`
+                  : 'linear-gradient(135deg, #f5c518, #e8b800)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '13px',
+                flexShrink: 0,
+              }}
+            >
+              {settings.manorEmoji ?? '\ud83c\udff0'}
+            </span>
+          )}
           <span
             style={{
               fontSize: '15px',
@@ -117,7 +135,7 @@ export function MobileSidebar({
               letterSpacing: '-0.2px',
             }}
           >
-            Manor Command Centre
+            {settings.manorName ?? 'Manor'} {settings.manorSubtitle ?? 'Command Centre'}
           </span>
         </div>
       </header>
@@ -163,22 +181,39 @@ export function MobileSidebar({
         {/* App icon + title */}
         <div className="px-4 pt-5 pb-3">
           <div className="flex items-center gap-3">
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, #f5c518, #e8b800)',
-                boxShadow: 'var(--shadow-card)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '18px',
-                flexShrink: 0,
-              }}
-            >
-              {'\ud83c\udff0'}
-            </div>
+            {settings.manorIcon ? (
+              <img
+                src={settings.manorIcon}
+                alt=""
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  objectFit: 'cover',
+                  boxShadow: 'var(--shadow-card)',
+                  flexShrink: 0,
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  background: settings.accentColor
+                    ? `linear-gradient(135deg, ${settings.accentColor}, ${settings.accentColor}dd)`
+                    : 'linear-gradient(135deg, #f5c518, #e8b800)',
+                  boxShadow: 'var(--shadow-card)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                  flexShrink: 0,
+                }}
+              >
+                {settings.manorEmoji ?? '\ud83c\udff0'}
+              </div>
+            )}
             <div>
               <div
                 style={{
@@ -188,7 +223,7 @@ export function MobileSidebar({
                   color: 'var(--text-primary)',
                 }}
               >
-                Manor
+                {settings.manorName ?? 'Manor'}
               </div>
               <div
                 style={{
@@ -197,7 +232,7 @@ export function MobileSidebar({
                   letterSpacing: '0.01em',
                 }}
               >
-                Command Centre
+                {settings.manorSubtitle ?? 'Command Centre'}
               </div>
             </div>
           </div>

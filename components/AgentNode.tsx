@@ -1,6 +1,7 @@
 "use client"
 import { Handle, Position, type NodeProps } from "@xyflow/react"
 import type { Agent, CronJob } from "@/lib/types"
+import { AgentAvatar } from "@/components/AgentAvatar"
 
 type AgentNodeData = Agent & { crons: CronJob[] } & Record<string, unknown>
 
@@ -38,21 +39,7 @@ export function AgentNode({ data, selected }: NodeProps) {
           marginBottom: "var(--space-1)",
         }}
       >
-        <div
-          style={{
-            fontSize: 20,
-            width: 30,
-            height: 30,
-            borderRadius: 8,
-            background: `${agent.color}20`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          {agent.emoji}
-        </div>
+        <AgentAvatar agent={agent} size={30} borderRadius={8} />
         <div
           style={{
             fontSize: "var(--text-body)",

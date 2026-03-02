@@ -6,6 +6,7 @@ import dynamic from "next/dynamic"
 import type { Agent, CronJob } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ErrorState } from "@/components/ErrorState"
+import { AgentAvatar } from "@/components/AgentAvatar"
 
 const ManorMap = dynamic(
   () => import("@/components/ManorMap").then((m) => ({ default: m.ManorMap })),
@@ -313,24 +314,17 @@ export default function ManorPage() {
                 padding: "0 var(--space-6) var(--space-6)",
               }}
             >
-              {/* Emoji avatar */}
-              <div
+              {/* Agent avatar */}
+              <AgentAvatar
+                agent={selected}
+                size={72}
+                borderRadius={20}
                 style={{
-                  width: 72,
-                  height: 72,
-                  borderRadius: 20,
-                  background: `${selected.color}22`,
                   border: `1px solid ${selected.color}40`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 36,
                   marginBottom: "var(--space-3)",
                   boxShadow: `0 4px 20px ${selected.color}18`,
                 }}
-              >
-                {selected.emoji}
-              </div>
+              />
 
               <h2
                 style={{
@@ -542,21 +536,7 @@ export default function ManorPage() {
                           textAlign: "left",
                         }}
                       >
-                        <span
-                          style={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: 9,
-                            background: `${parentAgent.color}20`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "var(--text-body)",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {parentAgent.emoji}
-                        </span>
+                        <AgentAvatar agent={parentAgent} size={32} borderRadius={9} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div
                             style={{
@@ -609,21 +589,7 @@ export default function ManorPage() {
                           textAlign: "left",
                         }}
                       >
-                        <span
-                          style={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: 9,
-                            background: `${c.color}20`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "var(--text-body)",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {c.emoji}
-                        </span>
+                        <AgentAvatar agent={c} size={32} borderRadius={9} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div
                             style={{

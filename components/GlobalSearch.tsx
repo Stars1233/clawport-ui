@@ -10,6 +10,7 @@ import {
   Brain,
   Bot,
   Timer,
+  Settings,
 } from 'lucide-react';
 import type { Agent, CronJob } from '@/lib/types';
 
@@ -35,6 +36,7 @@ const STATIC_PAGES: SearchResult[] = [
   { id: 'page-messages', label: 'Messages', icon: <MessageSquare size={16} />, href: '/chat', category: 'Pages' },
   { id: 'page-crons', label: 'Crons', icon: <Clock size={16} />, href: '/crons', category: 'Pages' },
   { id: 'page-memory', label: 'Memory', icon: <Brain size={16} />, href: '/memory', category: 'Pages' },
+  { id: 'page-settings', label: 'Settings', icon: <Settings size={16} />, href: '/settings', category: 'Pages' },
 ];
 
 // ---------------------------------------------------------------------------

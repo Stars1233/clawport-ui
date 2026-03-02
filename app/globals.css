@@ -325,7 +325,7 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: rgba(120,120,128,0.60); border: 2px solid transparent; background-clip: content-box; }
 
 /* Selection */
-::selection { background: rgba(245,197,24,0.25); color: var(--text-primary); }
+::selection { background: var(--accent-fill); color: var(--text-primary); }
 
 /* ============================================
    Keyframe Animations
@@ -482,7 +482,7 @@ body {
 }
 .btn-primary:hover {
   transform: scale(0.98);
-  box-shadow: 0 0 24px rgba(245, 197, 24, 0.35);
+  box-shadow: 0 0 24px var(--accent-fill);
 }
 .btn-primary:active {
   transform: scale(0.96);
