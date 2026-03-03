@@ -32,7 +32,7 @@ export interface Conversation {
 
 export type ConversationStore = Record<string, Conversation>
 
-const STORAGE_KEY = 'manor-conversations'
+const STORAGE_KEY = 'clawport-conversations'
 
 export function loadConversations(): ConversationStore {
   if (typeof window === 'undefined') return {}

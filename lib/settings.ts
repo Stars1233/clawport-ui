@@ -1,48 +1,57 @@
-// Settings types + localStorage helpers for Manor UI
+// Settings types + localStorage helpers for ClawPort
 
 export interface AgentOverride {
   emoji?: string
   profileImage?: string // base64 data URL
 }
 
-export interface ManorSettings {
+export interface ClawPortSettings {
   accentColor: string | null
-  manorName: string | null
-  manorSubtitle: string | null
-  manorEmoji: string | null
-  manorIcon: string | null // base64 data URL for custom icon image
+  portalName: string | null
+  portalSubtitle: string | null
+  portalEmoji: string | null
+  portalIcon: string | null // base64 data URL for custom icon image
   iconBgHidden: boolean // hide colored background on sidebar logo
   emojiOnly: boolean // show emoji avatars without colored background
   operatorName: string | null
   agentOverrides: Record<string, AgentOverride>
 }
 
-const STORAGE_KEY = 'manor-settings'
+const STORAGE_KEY = 'clawport-settings'
+const LEGACY_KEY = 'manor-settings'
 
-export const DEFAULTS: ManorSettings = {
+export const DEFAULTS: ClawPortSettings = {
   accentColor: null,
-  manorName: null,
-  manorSubtitle: null,
-  manorEmoji: null,
-  manorIcon: null,
+  portalName: null,
+  portalSubtitle: null,
+  portalEmoji: null,
+  portalIcon: null,
   iconBgHidden: false,
   emojiOnly: false,
   operatorName: null,
   agentOverrides: {},
 }
 
-export function loadSettings(): ManorSettings {
+export function loadSettings(): ClawPortSettings {
   if (typeof window === 'undefined') return { ...DEFAULTS }
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    let raw = localStorage.getItem(STORAGE_KEY)
+    // Migrate from legacy key
+    if (!raw) {
+      raw = localStorage.getItem(LEGACY_KEY)
+      if (raw) {
+        localStorage.setItem(STORAGE_KEY, raw)
+        localStorage.removeItem(LEGACY_KEY)
+      }
+    }
     if (!raw) return { ...DEFAULTS }
     const parsed = JSON.parse(raw)
     return {
       accentColor: typeof parsed.accentColor === 'string' ? parsed.accentColor : null,
-      manorName: typeof parsed.manorName === 'string' ? parsed.manorName : null,
-      manorSubtitle: typeof parsed.manorSubtitle === 'string' ? parsed.manorSubtitle : null,
-      manorEmoji: typeof parsed.manorEmoji === 'string' ? parsed.manorEmoji : null,
-      manorIcon: typeof parsed.manorIcon === 'string' ? parsed.manorIcon : null,
+      portalName: typeof parsed.portalName === 'string' ? parsed.portalName : typeof parsed.manorName === 'string' ? parsed.manorName : null,
+      portalSubtitle: typeof parsed.portalSubtitle === 'string' ? parsed.portalSubtitle : typeof parsed.manorSubtitle === 'string' ? parsed.manorSubtitle : null,
+      portalEmoji: typeof parsed.portalEmoji === 'string' ? parsed.portalEmoji : typeof parsed.manorEmoji === 'string' ? parsed.manorEmoji : null,
+      portalIcon: typeof parsed.portalIcon === 'string' ? parsed.portalIcon : typeof parsed.manorIcon === 'string' ? parsed.manorIcon : null,
       iconBgHidden: typeof parsed.iconBgHidden === 'boolean' ? parsed.iconBgHidden : false,
       emojiOnly: typeof parsed.emojiOnly === 'boolean' ? parsed.emojiOnly : false,
       operatorName: typeof parsed.operatorName === 'string' ? parsed.operatorName : null,
@@ -56,7 +65,7 @@ export function loadSettings(): ManorSettings {
   }
 }
 
-export function saveSettings(settings: ManorSettings): void {
+export function saveSettings(settings: ClawPortSettings): void {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))

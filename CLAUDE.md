@@ -1,4 +1,4 @@
-# Manor UI -- Developer Guide
+# ClawPort -- Developer Guide
 
 ## Quick Reference
 
@@ -12,7 +12,7 @@ npx next build       # Production build
 
 ## Project Overview
 
-Manor UI is a Next.js 16 dashboard for managing OpenClaw AI agents. It provides an org chart (Manor Map), direct agent chat with multimodal support, cron monitoring, and memory browsing. All AI calls route through the OpenClaw gateway -- no separate API keys needed.
+ClawPort is a Next.js 16 dashboard for managing OpenClaw AI agents. It provides an org chart (Org Map), direct agent chat with multimodal support, cron monitoring, and memory browsing. All AI calls route through the OpenClaw gateway -- no separate API keys needed.
 
 ## Tech Stack
 
@@ -40,7 +40,7 @@ Run `npm run setup` to auto-detect all required values from your local OpenClaw 
 
 ```
 loadRegistry() checks:
-  1. $WORKSPACE_PATH/manor/agents.json  (user override)
+  1. $WORKSPACE_PATH/clawport/agents.json  (user override)
   2. Bundled lib/agents.json            (default)
 ```
 
@@ -50,7 +50,7 @@ loadRegistry() checks:
 
 ```
 OnboardingWizard / Settings page
-  -> ManorSettings.operatorName (localStorage)
+  -> ClawPortSettings.operatorName (localStorage)
   -> settings-provider.tsx (React context)
   -> NavLinks.tsx (dynamic initials + display name)
   -> ConversationView.tsx (sends operatorName in POST body)
@@ -117,17 +117,17 @@ Five themes defined via CSS custom properties in `app/globals.css`:
 
 `components/OnboardingWizard.tsx` -- 5-step first-run setup wizard:
 
-1. **Welcome** -- manor name, subtitle, operator name (with live sidebar preview)
+1. **Welcome** -- portal name, subtitle, operator name (with live sidebar preview)
 2. **Theme** -- pick from available themes (applies live)
 3. **Accent Color** -- color preset grid
 4. **Voice Chat** -- microphone permission test (optional)
 5. **Overview** -- feature summary (Agent Map, Chat, Kanban, Crons, Memory)
 
-**First-run detection:** checks `localStorage('manor-onboarded')`. If absent, wizard shows automatically.
+**First-run detection:** checks `localStorage('clawport-onboarded')`. If absent, wizard shows automatically.
 
 **Mounting:** `OnboardingWizard` is rendered in `app/layout.tsx` (always present, self-hides when not needed).
 
-**Re-run:** settings page has a button that renders `<OnboardingWizard forceOpen onClose={...} />`. When `forceOpen` is true, the wizard pre-populates from current settings and does not set `manor-onboarded` on completion.
+**Re-run:** settings page has a button that renders `<OnboardingWizard forceOpen onClose={...} />`. When `forceOpen` is true, the wizard pre-populates from current settings and does not set `clawport-onboarded` on completion.
 
 ## Environment Safety
 
@@ -163,7 +163,7 @@ Used by: `lib/memory.ts`, `lib/cron-runs.ts`, `lib/kanban/chat-store.ts`, `lib/c
 | `lib/crons.ts` | Cron data fetching via CLI |
 | `lib/env.ts` | `requireEnv(name)` -- safe env var access with clear errors |
 | `lib/multimodal.ts` | `buildApiContent()` -- converts Message+Media to OpenAI API format |
-| `lib/settings.ts` | `ManorSettings` type, `loadSettings()`, `saveSettings()` (localStorage) |
+| `lib/settings.ts` | `ClawPortSettings` type, `loadSettings()`, `saveSettings()` (localStorage) |
 | `lib/transcribe.ts` | `transcribe(audioBlob)` -- Whisper API with graceful fallback |
 | `lib/validation.ts` | `validateChatMessages()` -- validates text + multimodal content arrays |
 
@@ -185,7 +185,7 @@ Used by: `lib/memory.ts`, `lib/cron-runs.ts`, `lib/kanban/chat-store.ts`, `lib/c
 | `NavLinks.tsx` | Sidebar nav with dynamic operator initials + name from settings |
 | `Sidebar.tsx` | Sidebar layout shell |
 | `AgentAvatar.tsx` | Agent emoji/image avatar with optional background |
-| `DynamicFavicon.tsx` | Updates favicon based on manor emoji/icon settings |
+| `DynamicFavicon.tsx` | Updates favicon based on portal emoji/icon settings |
 
 ### Scripts
 
@@ -224,16 +224,16 @@ Key test patterns:
 ## Common Tasks
 
 ### Add a new agent
-Edit `lib/agents.json` (or drop a custom `agents.json` into `$WORKSPACE_PATH/manor/`). Auto-appears in map, chat, and detail pages.
+Edit `lib/agents.json` (or drop a custom `agents.json` into `$WORKSPACE_PATH/clawport/`). Auto-appears in map, chat, and detail pages.
 
 ### Customize agents for your workspace
-Create `$WORKSPACE_PATH/manor/agents.json` with your own agent entries. Manor UI loads this instead of the bundled default. Format matches `lib/agents.json`.
+Create `$WORKSPACE_PATH/clawport/agents.json` with your own agent entries. ClawPort loads this instead of the bundled default. Format matches `lib/agents.json`.
 
 ### Re-run onboarding wizard
-Go to Settings page and click "Re-run Setup Wizard". This opens the wizard with `forceOpen` so it pre-populates current values and does not reset the `manor-onboarded` flag.
+Go to Settings page and click "Re-run Setup Wizard". This opens the wizard with `forceOpen` so it pre-populates current values and does not reset the `clawport-onboarded` flag.
 
 ### Add a new setting field
-1. Add the field to `ManorSettings` interface in `lib/settings.ts`
+1. Add the field to `ClawPortSettings` interface in `lib/settings.ts`
 2. Add a default value in `DEFAULTS`
 3. Add parsing logic in `loadSettings()`
 4. Add a setter method in `app/settings-provider.tsx`
@@ -247,6 +247,6 @@ Add a `[data-theme="name"]` block in `app/globals.css` with all CSS custom prope
 
 ### Debug image pipeline
 1. Check server console for `sendViaOpenClaw execFile error:` or `sendViaOpenClaw: timed out`
-2. Test CLI directly: `openclaw gateway call chat.send --params '{"sessionKey":"agent:main:manor-ui","idempotencyKey":"test","message":"describe","attachments":[]}' --token <token> --json`
-3. Check history: `openclaw gateway call chat.history --params '{"sessionKey":"agent:main:manor-ui"}' --token <token> --json`
+2. Test CLI directly: `openclaw gateway call chat.send --params '{"sessionKey":"agent:main:clawport","idempotencyKey":"test","message":"describe","attachments":[]}' --token <token> --json`
+3. Check history: `openclaw gateway call chat.history --params '{"sessionKey":"agent:main:clawport"}' --token <token> --json`
 4. Verify gateway is running: `openclaw gateway call health --token <token>`

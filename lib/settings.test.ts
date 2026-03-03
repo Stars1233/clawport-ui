@@ -27,10 +27,10 @@ describe('loadSettings', () => {
     const s = loadSettings()
     expect(s).toEqual({
       accentColor: null,
-      manorName: null,
-      manorSubtitle: null,
-      manorEmoji: null,
-      manorIcon: null,
+      portalName: null,
+      portalSubtitle: null,
+      portalEmoji: null,
+      portalIcon: null,
       iconBgHidden: false,
       emojiOnly: false,
       operatorName: null,
@@ -39,41 +39,41 @@ describe('loadSettings', () => {
   })
 
   it('parses stored settings correctly', () => {
-    store['manor-settings'] = JSON.stringify({
+    store['clawport-settings'] = JSON.stringify({
       accentColor: '#3B82F6',
-      manorName: 'HQ',
-      manorSubtitle: 'Base',
-      manorEmoji: '🚀',
-      manorIcon: 'data:image/jpeg;base64,icon123',
+      portalName: 'HQ',
+      portalSubtitle: 'Base',
+      portalEmoji: '🚀',
+      portalIcon: 'data:image/jpeg;base64,icon123',
       agentOverrides: { jarvis: { emoji: '🎯' } },
     })
     const s = loadSettings()
     expect(s.accentColor).toBe('#3B82F6')
-    expect(s.manorName).toBe('HQ')
-    expect(s.manorSubtitle).toBe('Base')
-    expect(s.manorEmoji).toBe('🚀')
-    expect(s.manorIcon).toBe('data:image/jpeg;base64,icon123')
+    expect(s.portalName).toBe('HQ')
+    expect(s.portalSubtitle).toBe('Base')
+    expect(s.portalEmoji).toBe('🚀')
+    expect(s.portalIcon).toBe('data:image/jpeg;base64,icon123')
     expect(s.agentOverrides.jarvis).toEqual({ emoji: '🎯' })
   })
 
   it('returns defaults for invalid JSON', () => {
-    store['manor-settings'] = 'not-json{{'
+    store['clawport-settings'] = 'not-json{{'
     const s = loadSettings()
     expect(s.accentColor).toBeNull()
     expect(s.agentOverrides).toEqual({})
   })
 
   it('handles partial/malformed data gracefully', () => {
-    store['manor-settings'] = JSON.stringify({
+    store['clawport-settings'] = JSON.stringify({
       accentColor: 42,
-      manorName: true,
+      portalName: true,
       agentOverrides: 'not-an-object',
     })
     const s = loadSettings()
     expect(s.accentColor).toBeNull()
-    expect(s.manorName).toBeNull()
-    expect(s.manorEmoji).toBeNull()
-    expect(s.manorIcon).toBeNull()
+    expect(s.portalName).toBeNull()
+    expect(s.portalEmoji).toBeNull()
+    expect(s.portalIcon).toBeNull()
     expect(s.agentOverrides).toEqual({})
   })
 })
@@ -82,10 +82,10 @@ describe('saveSettings', () => {
   it('persists settings to localStorage', () => {
     const settings = {
       accentColor: '#EF4444',
-      manorName: 'Test',
-      manorSubtitle: null,
-      manorEmoji: null,
-      manorIcon: null,
+      portalName: 'Test',
+      portalSubtitle: null,
+      portalEmoji: null,
+      portalIcon: null,
       iconBgHidden: false,
       emojiOnly: false,
       operatorName: null,
@@ -93,7 +93,7 @@ describe('saveSettings', () => {
     }
     saveSettings(settings)
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'manor-settings',
+      'clawport-settings',
       JSON.stringify(settings),
     )
   })
@@ -101,10 +101,10 @@ describe('saveSettings', () => {
   it('round-trips through load', () => {
     const settings = {
       accentColor: '#22C55E',
-      manorName: 'Green HQ',
-      manorSubtitle: 'Ops Center',
-      manorEmoji: '🏠',
-      manorIcon: 'data:image/png;base64,test',
+      portalName: 'Green HQ',
+      portalSubtitle: 'Ops Center',
+      portalEmoji: '🏠',
+      portalIcon: 'data:image/png;base64,test',
       iconBgHidden: false,
       emojiOnly: false,
       operatorName: null,

@@ -10,13 +10,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeId>('dark');
 
   useEffect(() => {
-    const saved = localStorage.getItem('manor-theme') as ThemeId | null;
+    const saved = localStorage.getItem('clawport-theme') as ThemeId | null;
     if (saved) apply(saved);
   }, []);
 
   function apply(t: ThemeId) {
     setThemeState(t);
-    localStorage.setItem('manor-theme', t);
+    localStorage.setItem('clawport-theme', t);
     const html = document.documentElement;
     html.removeAttribute('data-theme');
     if (t === 'system') {

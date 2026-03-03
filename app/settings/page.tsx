@@ -62,10 +62,10 @@ export default function SettingsPage() {
   const {
     settings,
     setAccentColor,
-    setManorName,
-    setManorSubtitle,
-    setManorEmoji,
-    setManorIcon,
+    setPortalName,
+    setPortalSubtitle,
+    setPortalEmoji,
+    setPortalIcon,
     setIconBgHidden,
     setEmojiOnly,
     setAgentOverride,
@@ -76,18 +76,18 @@ export default function SettingsPage() {
   const [wizardOpen, setWizardOpen] = useState(false)
   const [agents, setAgents] = useState<Agent[]>([])
   const [expandedAgent, setExpandedAgent] = useState<string | null>(null)
-  const [nameValue, setNameValue] = useState(settings.manorName ?? '')
-  const [subtitleValue, setSubtitleValue] = useState(settings.manorSubtitle ?? '')
-  const [emojiValue, setEmojiValue] = useState(settings.manorEmoji ?? '')
+  const [nameValue, setNameValue] = useState(settings.portalName ?? '')
+  const [subtitleValue, setSubtitleValue] = useState(settings.portalSubtitle ?? '')
+  const [emojiValue, setEmojiValue] = useState(settings.portalEmoji ?? '')
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const manorIconInputRef = useRef<HTMLInputElement>(null)
+  const portalIconInputRef = useRef<HTMLInputElement>(null)
 
   // Sync local input values when settings change externally (e.g., reset)
   useEffect(() => {
-    setNameValue(settings.manorName ?? '')
-    setSubtitleValue(settings.manorSubtitle ?? '')
-    setEmojiValue(settings.manorEmoji ?? '')
-  }, [settings.manorName, settings.manorSubtitle, settings.manorEmoji])
+    setNameValue(settings.portalName ?? '')
+    setSubtitleValue(settings.portalSubtitle ?? '')
+    setEmojiValue(settings.portalEmoji ?? '')
+  }, [settings.portalName, settings.portalSubtitle, settings.portalEmoji])
 
   // Fetch agents
   useEffect(() => {
@@ -102,10 +102,10 @@ export default function SettingsPage() {
       .catch(() => setAgents([]))
   }, [])
 
-  async function handleManorIconUpload(file: File) {
+  async function handleIconUpload(file: File) {
     try {
       const dataUrl = await resizeImage(file, 200)
-      setManorIcon(dataUrl)
+      setPortalIcon(dataUrl)
     } catch {
       // silently fail — user can retry
     }
@@ -288,10 +288,10 @@ export default function SettingsPage() {
               <input
                 type="text"
                 className="apple-input"
-                placeholder="Agent Claw"
+                placeholder="ClawPort"
                 value={nameValue}
                 onChange={(e) => setNameValue(e.target.value)}
-                onBlur={() => setManorName(nameValue || null)}
+                onBlur={() => setPortalName(nameValue || null)}
                 style={{
                   width: '100%',
                   background: 'var(--bg-secondary)',
@@ -320,7 +320,7 @@ export default function SettingsPage() {
                 placeholder="Command Centre"
                 value={subtitleValue}
                 onChange={(e) => setSubtitleValue(e.target.value)}
-                onBlur={() => setManorSubtitle(subtitleValue || null)}
+                onBlur={() => setPortalSubtitle(subtitleValue || null)}
                 style={{
                   width: '100%',
                   background: 'var(--bg-secondary)',
@@ -345,10 +345,10 @@ export default function SettingsPage() {
               </label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
                 {/* Live preview */}
-                {settings.manorIcon ? (
+                {settings.portalIcon ? (
                   <img
-                    src={settings.manorIcon}
-                    alt="Manor icon"
+                    src={settings.portalIcon}
+                    alt="Portal icon"
                     style={{
                       width: 36,
                       height: 36,
@@ -377,7 +377,7 @@ export default function SettingsPage() {
                       flexShrink: 0,
                     }}
                   >
-                    {settings.manorEmoji ?? '\ud83c\udff0'}
+                    {settings.portalEmoji ?? '\ud83c\udff0'}
                   </div>
                 )}
 
@@ -388,7 +388,7 @@ export default function SettingsPage() {
                   placeholder={'\ud83c\udff0'}
                   value={emojiValue}
                   onChange={(e) => setEmojiValue(e.target.value)}
-                  onBlur={() => setManorEmoji(emojiValue || null)}
+                  onBlur={() => setPortalEmoji(emojiValue || null)}
                   style={{
                     width: 60,
                     textAlign: 'center',
@@ -401,7 +401,7 @@ export default function SettingsPage() {
 
                 {/* Upload image button */}
                 <button
-                  onClick={() => manorIconInputRef.current?.click()}
+                  onClick={() => portalIconInputRef.current?.click()}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -420,23 +420,23 @@ export default function SettingsPage() {
                   Upload Image
                 </button>
                 <input
-                  ref={manorIconInputRef}
+                  ref={portalIconInputRef}
                   type="file"
                   accept="image/*"
                   style={{ display: 'none' }}
                   onChange={(e) => {
                     const file = e.target.files?.[0]
-                    if (file) handleManorIconUpload(file)
+                    if (file) handleIconUpload(file)
                     e.target.value = ''
                   }}
                 />
 
                 {/* Clear overrides */}
-                {(settings.manorIcon || settings.manorEmoji) && (
+                {(settings.portalIcon || settings.portalEmoji) && (
                   <button
                     onClick={() => {
-                      setManorIcon(null)
-                      setManorEmoji(null)
+                      setPortalIcon(null)
+                      setPortalEmoji(null)
                     }}
                     aria-label="Reset icon"
                     style={{
@@ -459,7 +459,7 @@ export default function SettingsPage() {
               </div>
 
               {/* Hide background toggle — only relevant when no uploaded image */}
-              {!settings.manorIcon && (
+              {!settings.portalIcon && (
                 <div
                   style={{
                     display: 'flex',

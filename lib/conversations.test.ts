@@ -302,13 +302,13 @@ describe('loadConversations', () => {
     const data: ConversationStore = {
       vera: makeConversation({ agentId: 'vera' }),
     }
-    localStorage.setItem('manor-conversations', JSON.stringify(data))
+    localStorage.setItem('clawport-conversations', JSON.stringify(data))
     const result = loadConversations()
     expect(result.vera.agentId).toBe('vera')
   })
 
   it('returns empty object when localStorage contains invalid JSON', () => {
-    localStorage.setItem('manor-conversations', 'not-json!!')
+    localStorage.setItem('clawport-conversations', 'not-json!!')
     const result = loadConversations()
     expect(result).toEqual({})
   })
@@ -324,7 +324,7 @@ describe('saveConversations', () => {
       vera: makeConversation({ agentId: 'vera' }),
     }
     saveConversations(data)
-    const raw = localStorage.getItem('manor-conversations')
+    const raw = localStorage.getItem('clawport-conversations')
     expect(raw).toBeTruthy()
     expect(JSON.parse(raw!).vera.agentId).toBe('vera')
   })

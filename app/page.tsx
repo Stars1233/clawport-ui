@@ -11,8 +11,8 @@ import { AgentAvatar } from "@/components/AgentAvatar"
 import { GridView } from "@/components/GridView"
 import { FeedView } from "@/components/FeedView"
 
-const ManorMap = dynamic(
-  () => import("@/components/ManorMap").then((m) => ({ default: m.ManorMap })),
+const OrgMap = dynamic(
+  () => import("@/components/ManorMap").then((m) => ({ default: m.OrgMap })),
   {
     ssr: false,
     loading: () => (
@@ -115,7 +115,7 @@ const VIEW_OPTIONS: { key: View; label: string }[] = [
 /* ──────────────────────────────────────────────
    Main page
    ────────────────────────────────────────────── */
-export default function ManorPage() {
+export default function HomePage() {
   const router = useRouter()
   const [agents, setAgents] = useState<Agent[]>([])
   const [crons, setCrons] = useState<CronJob[]>([])
@@ -191,7 +191,7 @@ export default function ManorPage() {
         {loading ? (
           <MapSkeleton />
         ) : view === "map" ? (
-          <ManorMap
+          <OrgMap
             agents={agents}
             crons={crons}
             selectedId={selected?.id ?? null}

@@ -1,4 +1,4 @@
-# Manor UI -- API Reference
+# ClawPort -- API Reference
 
 All API routes are Next.js App Router route handlers under `app/api/`.
 The base URL during development is `http://localhost:3000`.
@@ -30,7 +30,7 @@ Returned with the appropriate HTTP status code and `Content-Type: application/js
 
 Returns the full list of registered agents, each with their SOUL.md content loaded from the filesystem.
 
-**Data source:** JSON registry file (bundled `lib/agents.json` or user override at `$WORKSPACE_PATH/manor/agents.json`) + SOUL.md files from the workspace filesystem.
+**Data source:** JSON registry file (bundled `lib/agents.json` or user override at `$WORKSPACE_PATH/clawport/agents.json`) + SOUL.md files from the workspace filesystem.
 
 #### Request
 
@@ -72,7 +72,7 @@ curl http://localhost:3000/api/agents
 const res = await fetch('/api/agents')
 const agents = await res.json()
 // agents[0].id => "jarvis"
-// agents[0].soul => "# JARVIS\n\nYou are the Manor's orchestrator..."
+// agents[0].soul => "# JARVIS\n\nYou are the team's orchestrator..."
 ```
 
 ---

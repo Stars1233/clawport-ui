@@ -1,8 +1,8 @@
-# Manor UI
+# ClawPort
 
 A visual command centre for your AI agent team.
 
-Manor UI is an open-source dashboard for managing, monitoring, and talking directly to your [OpenClaw](https://openclaw.ai) AI agents. Built with Next.js 16, React 19, and a dark command-centre aesthetic with five themes.
+ClawPort is an open-source dashboard for managing, monitoring, and talking directly to your [OpenClaw](https://openclaw.ai) AI agents. Built with Next.js 16, React 19, and a dark command-centre aesthetic with five themes.
 
 ---
 
@@ -18,8 +18,8 @@ Manor UI is an open-source dashboard for managing, monitoring, and talking direc
 
 ```bash
 # Clone the repo
-git clone https://github.com/openclaw/manor-ui.git
-cd manor-ui
+git clone https://github.com/openclaw/clawport.git
+cd clawport
 
 # Install dependencies
 npm install
@@ -31,7 +31,7 @@ npm run setup
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). On first launch you'll see the **onboarding wizard**, which walks you through naming your manor, choosing a theme, and personalizing agent avatars.
+Open [http://localhost:3000](http://localhost:3000). On first launch you'll see the **onboarding wizard**, which walks you through naming your portal, choosing a theme, and personalizing agent avatars.
 
 See [SETUP.md](SETUP.md) for detailed environment configuration and troubleshooting.
 
@@ -39,7 +39,7 @@ See [SETUP.md](SETUP.md) for detailed environment configuration and troubleshoot
 
 ## Features
 
-### Manor Map
+### Org Map
 Interactive org chart of your entire agent team. Nodes show hierarchy, cron status, voice capabilities, and relationships at a glance. Powered by React Flow with BFS-based auto-layout.
 
 ### Chat (Call Box)
@@ -65,7 +65,7 @@ Live status of all scheduled jobs. Filter by status (all/ok/error/idle), sort er
 Read team memory, long-term memory, and daily logs. Markdown rendering and JSON syntax highlighting built-in. Search, copy, and download support.
 
 ### Settings
-Personalize your manor: custom name, subtitle, logo/emoji, accent color, agent avatar overrides, and theme selection. All settings persist in your browser.
+Personalize your portal: custom name, subtitle, logo/emoji, accent color, agent avatar overrides, and theme selection. All settings persist in your browser.
 
 ---
 
@@ -93,13 +93,13 @@ See [SETUP.md](SETUP.md) for how to find each value.
 
 ## Agent Customization
 
-Manor UI ships with a bundled agent registry (`lib/agents.json`) as a working example. To use your own agents, create a file at:
+ClawPort ships with a bundled agent registry (`lib/agents.json`) as a working example. To use your own agents, create a file at:
 
 ```
-$WORKSPACE_PATH/manor/agents.json
+$WORKSPACE_PATH/clawport/agents.json
 ```
 
-Manor UI checks for this file on every request. If it exists, it takes priority over the bundled registry. If it's missing or malformed, the bundled default is used as a fallback.
+ClawPort checks for this file on every request. If it exists, it takes priority over the bundled registry. If it's missing or malformed, the bundled default is used as a fallback.
 
 Each agent entry looks like this:
 
@@ -130,7 +130,7 @@ See [SETUP.md](SETUP.md) for the full field reference and examples.
 
 Text messages go through the OpenClaw gateway's OpenAI-compatible endpoint (`/v1/chat/completions`) for streaming responses.
 
-Image messages use a different pipeline because the gateway's HTTP endpoint strips image data. Instead, Manor UI uses the same path as Discord/Telegram channels:
+Image messages use a different pipeline because the gateway's HTTP endpoint strips image data. Instead, ClawPort uses the same path as Discord/Telegram channels:
 
 ```
 User attaches image
@@ -149,13 +149,13 @@ Voice messages are recorded in-browser using the MediaRecorder API, transcribed 
 
 ```
 app/
-  page.tsx              — Manor Map (React Flow org chart)
+  page.tsx              — Org Map (React Flow org chart)
   chat/page.tsx         — Multi-agent messenger
   agents/[id]/page.tsx  — Agent detail profile
   kanban/page.tsx       — Task board
   crons/page.tsx        — Cron job monitor
   memory/page.tsx       — Memory file browser
-  settings/page.tsx     — Manor personalization
+  settings/page.tsx     — ClawPort personalization
   api/
     agents/route.ts     — GET agents from registry
     chat/[id]/route.ts  — POST chat (text + vision)
@@ -165,7 +165,7 @@ app/
     transcribe/route.ts — POST audio transcription
 
 components/
-  ManorMap.tsx          — React Flow graph with auto-layout
+  OrgMap.tsx            — React Flow graph with auto-layout
   AgentNode.tsx         — Custom node for the org chart
   Sidebar.tsx           — Desktop navigation sidebar
   MobileSidebar.tsx     — Mobile hamburger menu
@@ -190,7 +190,7 @@ lib/
   memory.ts             — Memory file reader
   multimodal.ts         — Message → API content format converter
   sanitize.ts           — HTML/markdown sanitization
-  settings.ts           — Manor settings (localStorage)
+  settings.ts           — ClawPort settings (localStorage)
   transcribe.ts         — Whisper transcription with fallback
   validation.ts         — Chat message validation
   types.ts              — Shared TypeScript types

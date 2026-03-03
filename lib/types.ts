@@ -1,4 +1,4 @@
-// Shared types for the Manor UI
+// Shared types for ClawPort
 
 export interface Agent {
   id: string               // slug, e.g. "vera"

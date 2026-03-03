@@ -15,7 +15,7 @@ const PREFIX_MAP: [string, string][] = [
   ['kaze-', 'kaze'],
   ['vault-', 'jarvis'],
   ['builder-', 'jarvis'],
-  ['manor-', 'jarvis'],
+  ['clawport-', 'jarvis'],
   ['maven-', 'maven'],
   ['recon-', 'robin'],
   ['team-memory-', 'scribe'],

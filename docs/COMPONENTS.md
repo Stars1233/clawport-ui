@@ -1,4 +1,4 @@
-# Manor UI -- Component Reference
+# ClawPort -- Component Reference
 
 Every React component in the codebase, grouped by area. For each component: purpose, props, key state, parent usage, and implementation notes.
 
@@ -18,8 +18,8 @@ RootLayout (app/layout.tsx)
         MobileSidebar (components/MobileSidebar.tsx)
         GlobalSearch (components/GlobalSearch.tsx)
       <main> (page content)
-        ManorPage (app/page.tsx)
-          ManorMap (components/ManorMap.tsx)
+        HomePage (app/page.tsx)
+          OrgMap (components/OrgMap.tsx)
             AgentNode (components/AgentNode.tsx)
               AgentAvatar (components/AgentAvatar.tsx)
           GridView (components/GridView.tsx)
@@ -75,10 +75,10 @@ RootLayout (app/layout.tsx)
 ```
 
 **Key state:**
-- `theme` (useState) -- persisted to `localStorage('manor-theme')`, defaults to `'dark'`
+- `theme` (useState) -- persisted to `localStorage('clawport-theme')`, defaults to `'dark'`
 
 **Implementation:**
-- On mount, reads `localStorage('manor-theme')` and sets `data-theme` attribute on `<html>`
+- On mount, reads `localStorage('clawport-theme')` and sets `data-theme` attribute on `<html>`
 - `setTheme` updates state, localStorage, and the DOM attribute in one call
 - Exports `useTheme()` hook for consumers
 
@@ -99,12 +99,12 @@ RootLayout (app/layout.tsx)
 
 ```ts
 interface SettingsContextValue {
-  settings: ManorSettings
+  settings: ClawPortSettings
   setAccentColor: (color: string | null) => void
-  setManorName: (name: string | null) => void
-  setManorSubtitle: (subtitle: string | null) => void
-  setManorEmoji: (emoji: string | null) => void
-  setManorIcon: (icon: string | null) => void
+  setPortalName: (name: string | null) => void
+  setPortalSubtitle: (subtitle: string | null) => void
+  setPortalEmoji: (emoji: string | null) => void
+  setPortalIcon: (icon: string | null) => void
   setIconBgHidden: (hidden: boolean) => void
   setEmojiOnly: (emojiOnly: boolean) => void
   setOperatorName: (name: string | null) => void
@@ -115,7 +115,7 @@ interface SettingsContextValue {
 ```
 
 **Key state:**
-- `settings` (useState) -- full `ManorSettings` object, persisted to localStorage via `saveSettings()`
+- `settings` (useState) -- full `ClawPortSettings` object, persisted to localStorage via `saveSettings()`
 
 **Implementation:**
 - Applies CSS custom properties (`--accent`, `--accent-hover`, `--accent-glow`) directly to `document.documentElement.style` when accent color changes
@@ -143,7 +143,7 @@ interface SettingsContextValue {
 - Renders `NavLinks` and `ThemeToggle` inside a fixed-width desktop sidebar (`w-[220px]`, hidden on mobile)
 - Renders `MobileSidebar` for mobile viewports
 - Renders `GlobalSearch` (always mounted, visibility controlled by `searchOpen`)
-- Listens for custom event `manor:open-search` to toggle search open
+- Listens for custom event `clawport:open-search` to toggle search open
 - Dispatches search-open from MobileSidebar's search trigger
 
 **Used by:** `app/layout.tsx`
@@ -186,7 +186,7 @@ interface SettingsContextValue {
 - `isOpen` (useState) -- sidebar panel visibility
 
 **Implementation:**
-- Fixed header bar (48px) with manor emoji/name, search icon, and hamburger button
+- Fixed header bar (48px) with portal emoji/name, search icon, and hamburger button
 - Slide-out panel renders NavLinks and ThemeToggle
 - Closes on: route change (`usePathname` effect), ESC key, click outside panel
 - Prevents body scroll when open via `overflow: hidden` on body
@@ -206,7 +206,7 @@ interface SettingsContextValue {
 | open | `boolean` | Yes | Whether the search modal is visible |
 | onClose | `() => void` | Yes | Callback to close the modal |
 
-**Exports:** `GlobalSearch` (main modal) and `SearchTrigger` (button that dispatches `manor:open-search`)
+**Exports:** `GlobalSearch` (main modal) and `SearchTrigger` (button that dispatches `clawport:open-search`)
 
 **Key state:**
 - `query` (useState) -- search input text
@@ -229,7 +229,7 @@ interface SettingsContextValue {
 ### DynamicFavicon
 
 **File:** `components/DynamicFavicon.tsx`
-**Purpose:** Generates and applies a dynamic favicon from the manor emoji or uploaded icon image.
+**Purpose:** Generates and applies a dynamic favicon from the portal emoji or uploaded icon image.
 
 **Props:** None (renders `null`)
 
@@ -237,11 +237,11 @@ interface SettingsContextValue {
 
 **Implementation:**
 - Uses Canvas API to draw favicon onto a 64x64 canvas
-- If `manorIcon` (uploaded image): draws the image scaled to fill the canvas
-- If `manorEmoji`: draws a colored circle background (using accent color) and renders the emoji as centered text
+- If `portalIcon` (uploaded image): draws the image scaled to fill the canvas
+- If `portalEmoji`: draws a colored circle background (using accent color) and renders the emoji as centered text
 - If `iconBgHidden`: skips the circle background for emoji mode
 - Converts canvas to PNG data URL and sets it on a `<link rel="icon">` element
-- Re-runs when `manorEmoji`, `manorIcon`, `accentColor`, `iconBgHidden`, or `emojiOnly` change
+- Re-runs when `portalEmoji`, `portalIcon`, `accentColor`, `iconBgHidden`, or `emojiOnly` change
 
 **Used by:** `app/layout.tsx`
 
@@ -342,7 +342,7 @@ interface BreadcrumbItem {
 ### OnboardingWizard
 
 **File:** `components/OnboardingWizard.tsx`
-**Purpose:** Five-step first-run setup wizard for configuring manor name, theme, accent color, voice chat, and feature overview.
+**Purpose:** Five-step first-run setup wizard for configuring portal name, theme, accent color, voice chat, and feature overview.
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
@@ -359,16 +359,16 @@ interface BreadcrumbItem {
 - `micLevel` (useState) -- real-time audio level for mic test visualization
 
 **Steps:**
-1. **Welcome** (step 0) -- Manor name, subtitle, emoji picker, operator name. Live sidebar preview showing how NavLinks will look.
+1. **Welcome** (step 0) -- Portal name, subtitle, emoji picker, operator name. Live sidebar preview showing how NavLinks will look.
 2. **Theme** (step 1) -- Theme grid with preview cards. Applies theme live via `setTheme()`.
 3. **Accent Color** (step 2) -- Color preset grid (12 colors). Applies live via `setAccentColor()`.
 4. **Voice Chat** (step 3) -- Microphone permission test. Uses Web Audio API (`AudioContext` + `AnalyserNode`) to capture real-time audio levels and display a pulsing circle visualization.
 5. **Overview** (step 4) -- Feature summary cards (Agent Map, Chat, Kanban, Crons, Memory).
 
 **Implementation:**
-- First-run detection: checks `localStorage('manor-onboarded')`
-- When `forceOpen` is true: pre-populates all fields from current settings, does NOT set `manor-onboarded` on completion
-- Normal completion: sets `manor-onboarded` in localStorage and saves all settings
+- First-run detection: checks `localStorage('clawport-onboarded')`
+- When `forceOpen` is true: pre-populates all fields from current settings, does NOT set `clawport-onboarded` on completion
+- Normal completion: sets `clawport-onboarded` in localStorage and saves all settings
 - Modal overlay with backdrop blur, step indicator dots, back/next/finish navigation
 - Mic test cleans up audio stream and context on unmount or step change
 
@@ -378,9 +378,9 @@ interface BreadcrumbItem {
 
 ## Map / Home Page Components
 
-### ManorMap
+### OrgMap
 
-**File:** `components/ManorMap.tsx`
+**File:** `components/OrgMap.tsx`
 **Purpose:** React Flow org chart visualization of the agent hierarchy with interactive node selection.
 
 | Prop | Type | Required | Description |
@@ -403,7 +403,7 @@ interface BreadcrumbItem {
 - Uses `ReactFlow` with `fitView`, `panOnScroll`, and zoom controls
 - Dynamically imported in `app/page.tsx` with `{ ssr: false }` to avoid SSR issues with React Flow
 
-**Used by:** `app/page.tsx` (ManorPage, map view)
+**Used by:** `app/page.tsx` (HomePage, map view)
 
 ---
 
@@ -431,7 +431,7 @@ interface AgentNodeData {
 - Uses React Flow `Handle` components for source (bottom) and target (top) connections
 - Exports `nodeTypes = { agentNode: AgentNode }` for React Flow registration
 
-**Used by:** `components/ManorMap.tsx`
+**Used by:** `components/OrgMap.tsx`
 
 ---
 
@@ -454,7 +454,7 @@ interface AgentNodeData {
 - Selected card gets accent border highlight
 - Responsive grid: 1 col mobile, 2 cols md, 3 cols lg
 
-**Used by:** `app/page.tsx` (ManorPage, grid view)
+**Used by:** `app/page.tsx` (HomePage, grid view)
 
 ---
 
@@ -481,7 +481,7 @@ interface AgentNodeData {
 - Contains inline `StatusBadge` and `StatCard` helper components
 - Clicking a cron row selects its associated agent
 
-**Used by:** `app/page.tsx` (ManorPage, feed view)
+**Used by:** `app/page.tsx` (HomePage, feed view)
 
 ---
 
@@ -846,7 +846,7 @@ interface AgentNodeData {
 
 ## Page Components
 
-### ManorPage (Home)
+### HomePage (Home)
 
 **File:** `app/page.tsx`
 **Purpose:** Main dashboard with three view modes (map, grid, feed) and agent detail side panel.
@@ -860,7 +860,7 @@ interface AgentNodeData {
 
 **Implementation:**
 - View mode toggle: three icon buttons in header (Map, Grid, Activity)
-- Map view: dynamically imports `ManorMap` with `{ ssr: false }`
+- Map view: dynamically imports `OrgMap` with `{ ssr: false }`
 - Grid view: renders `GridView`
 - Feed view: renders `FeedView`
 - Agent detail panel: slide-in from right (400px) showing avatar, name, title, description, tools list, hierarchy links, cron health
@@ -1026,7 +1026,7 @@ interface AgentNodeData {
 
 **Sections:**
 1. **Accent Color** -- preset color grid (12 colors + reset to default)
-2. **Branding** -- manor name, subtitle, emoji picker, icon upload (with Canvas API resize to 128px)
+2. **Branding** -- portal name, subtitle, emoji picker, icon upload (with Canvas API resize to 128px)
 3. **Agent Customization** -- expandable per-agent sections to override emoji or profile image
 4. **Danger Zone** -- reset all settings button, re-run setup wizard button
 

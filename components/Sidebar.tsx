@@ -17,7 +17,7 @@ export function Sidebar() {
     // We trigger the search modal by simulating Cmd+K.
     // Instead, we expose a controlled open state via a custom event.
     // The GlobalSearch component listens for this.
-    window.dispatchEvent(new CustomEvent('manor:open-search'));
+    window.dispatchEvent(new CustomEvent('clawport:open-search'));
   }, []);
 
   return (
@@ -37,9 +37,9 @@ export function Sidebar() {
         {/* App icon + title */}
         <div className="px-4 pt-5 pb-3">
           <div className="flex items-center gap-3">
-            {settings.manorIcon ? (
+            {settings.portalIcon ? (
               <img
-                src={settings.manorIcon}
+                src={settings.portalIcon}
                 alt=""
                 style={{
                   width: '36px',
@@ -69,7 +69,7 @@ export function Sidebar() {
                   flexShrink: 0,
                 }}
               >
-                {settings.manorEmoji ?? '\ud83c\udff0'}
+                {settings.portalEmoji ?? '\ud83c\udff0'}
               </div>
             )}
             <div>
@@ -81,7 +81,7 @@ export function Sidebar() {
                   color: 'var(--text-primary)',
                 }}
               >
-                {settings.manorName ?? 'Agent Claw'}
+                {settings.portalName ?? 'ClawPort'}
               </div>
               <div
                 style={{
@@ -90,7 +90,7 @@ export function Sidebar() {
                   letterSpacing: '0.01em',
                 }}
               >
-                {settings.manorSubtitle ?? 'Command Centre'}
+                {settings.portalSubtitle ?? 'Command Centre'}
               </div>
             </div>
           </div>

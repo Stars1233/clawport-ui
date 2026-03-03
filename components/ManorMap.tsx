@@ -12,7 +12,7 @@ import { useCallback, useEffect } from "react"
 import type { Agent, CronJob } from "@/lib/types"
 import { nodeTypes } from "@/components/AgentNode"
 
-interface ManorMapProps {
+interface OrgMapProps {
   agents: Agent[]
   crons: CronJob[]
   selectedId: string | null
@@ -114,7 +114,7 @@ function buildLayout(
   return { nodes, edges }
 }
 
-export function ManorMap({ agents, crons, selectedId, onNodeClick }: ManorMapProps) {
+export function OrgMap({ agents, crons, selectedId, onNodeClick }: OrgMapProps) {
   const { nodes: initialNodes, edges: initialEdges } = buildLayout(agents, crons, selectedId)
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)

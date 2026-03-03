@@ -1,6 +1,6 @@
-# Manor UI -- Setup Guide
+# ClawPort -- Setup Guide
 
-This guide walks you through getting Manor UI running against your own OpenClaw instance. If you just want the quick version, see the [README](README.md).
+This guide walks you through getting ClawPort running against your own OpenClaw instance. If you just want the quick version, see the [README](README.md).
 
 ---
 
@@ -8,15 +8,15 @@ This guide walks you through getting Manor UI running against your own OpenClaw 
 
 1. **Node.js 22+** -- [Download](https://nodejs.org). Verify with `node -v`.
 2. **OpenClaw** -- [Install OpenClaw](https://openclaw.ai) and make sure the CLI works: `openclaw --version`.
-3. **OpenClaw gateway running** -- Manor UI talks to the gateway at `localhost:18789`. Start it before launching the UI.
+3. **OpenClaw gateway running** -- ClawPort talks to the gateway at `localhost:18789`. Start it before launching the UI.
 
 ---
 
-## 1. Install Manor UI
+## 1. Install ClawPort
 
 ```bash
-git clone https://github.com/openclaw/manor-ui.git
-cd manor-ui
+git clone https://github.com/openclaw/clawport.git
+cd clawport
 npm install
 ```
 
@@ -60,7 +60,7 @@ WORKSPACE_PATH=/Users/yourname/.openclaw/workspace
 
 ### OPENCLAW_BIN
 
-The absolute path to the `openclaw` CLI binary. Manor UI calls this binary for vision messages, cron listing, and other CLI operations.
+The absolute path to the `openclaw` CLI binary. ClawPort calls this binary for vision messages, cron listing, and other CLI operations.
 
 To find it:
 
@@ -78,7 +78,7 @@ If you installed via nvm or a version manager, the path might be something like 
 
 ### OPENCLAW_GATEWAY_TOKEN
 
-The token that authenticates all API calls to the OpenClaw gateway. Every request Manor UI makes (chat, vision, TTS, transcription) includes this token.
+The token that authenticates all API calls to the OpenClaw gateway. Every request ClawPort makes (chat, vision, TTS, transcription) includes this token.
 
 To find it:
 
@@ -106,17 +106,17 @@ If you skip this, everything works normally. Voice indicators just won't appear.
 
 ## 3. Start the Gateway
 
-Manor UI expects the OpenClaw gateway to be running at `localhost:18789`. Start it in a separate terminal:
+ClawPort expects the OpenClaw gateway to be running at `localhost:18789`. Start it in a separate terminal:
 
 ```bash
 openclaw gateway run
 ```
 
-Leave this running while you use Manor UI. If the gateway isn't running, chat and all AI features will fail with connection errors.
+Leave this running while you use ClawPort. If the gateway isn't running, chat and all AI features will fail with connection errors.
 
 ---
 
-## 4. Run Manor UI
+## 4. Run ClawPort
 
 ```bash
 npm run dev
@@ -126,9 +126,9 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### First-Run Onboarding
 
-On your first visit, Manor UI launches the **onboarding wizard**. This walks you through:
+On your first visit, ClawPort launches the **onboarding wizard**. This walks you through:
 
-- **Naming your manor** -- give your command centre a custom name and subtitle
+- **Naming your portal** -- give your command centre a custom name and subtitle
 - **Choosing a theme** -- pick from Dark, Glass, Color, Light, or System
 - **Setting an accent color** -- personalize the UI highlight color
 - **Customizing your logo** -- upload an icon or choose an emoji
@@ -142,23 +142,23 @@ All of these can be changed later in the Settings page. The wizard just gets you
 
 ### Using the Bundled Registry
 
-Manor UI ships with a default agent registry at `lib/agents.json`. This is a working example showing a full team hierarchy. It works out of the box if your OpenClaw workspace has matching agent SOUL files.
+ClawPort ships with a default agent registry at `lib/agents.json`. This is a working example showing a full team hierarchy. It works out of the box if your OpenClaw workspace has matching agent SOUL files.
 
 ### Using Your Own Agents
 
 To define your own agent team, create a file at:
 
 ```
-$WORKSPACE_PATH/manor/agents.json
+$WORKSPACE_PATH/clawport/agents.json
 ```
 
 For example, if your `WORKSPACE_PATH` is `/Users/yourname/.openclaw/workspace`:
 
 ```bash
-mkdir -p /Users/yourname/.openclaw/workspace/manor
+mkdir -p /Users/yourname/.openclaw/workspace/clawport
 ```
 
-Then create `agents.json` in that directory. Manor UI checks for this file on every request. If it exists, it replaces the bundled registry entirely. If it's missing or contains invalid JSON, the bundled default is used as a fallback.
+Then create `agents.json` in that directory. ClawPort checks for this file on every request. If it exists, it replaces the bundled registry entirely. If it's missing or contains invalid JSON, the bundled default is used as a fallback.
 
 ### Agent Entry Format
 
@@ -194,7 +194,7 @@ Your `agents.json` should be an array of agent objects. Here's the minimal requi
 | `directReports` | string[] | Array of child agent `id`s |
 | `soulPath` | string or null | Path to the agent's SOUL.md, relative to `WORKSPACE_PATH` |
 | `voiceId` | string or null | ElevenLabs voice ID (requires `ELEVENLABS_API_KEY`) |
-| `color` | string | Hex color for the agent's node in the Manor Map |
+| `color` | string | Hex color for the agent's node in the Org Map |
 | `emoji` | string | Emoji shown as the agent's avatar |
 | `tools` | string[] | List of tools this agent has access to |
 | `memoryPath` | string or null | Path to agent-specific memory (relative to `WORKSPACE_PATH`) |
@@ -204,7 +204,7 @@ Your `agents.json` should be an array of agent objects. Here's the minimal requi
 
 - Exactly one agent should have `"reportsTo": null` -- this is your root/orchestrator node.
 - `directReports` should be consistent with `reportsTo`. If agent B reports to agent A, then A's `directReports` should include B's `id`.
-- The Manor Map uses these relationships to build the org chart automatically.
+- The Org Map uses these relationships to build the org chart automatically.
 
 ### Example: Minimal Two-Agent Setup
 
@@ -285,15 +285,15 @@ You should get a JSON response. If not, check that nothing else is using port 18
 ### No agents showing up
 
 1. **Check `WORKSPACE_PATH`** -- make sure it points to a valid OpenClaw workspace directory.
-2. **Check your agents.json** -- if you placed a custom `agents.json` at `$WORKSPACE_PATH/manor/agents.json`, make sure it's valid JSON. A syntax error will cause a silent fallback to the bundled registry. Test with:
+2. **Check your agents.json** -- if you placed a custom `agents.json` at `$WORKSPACE_PATH/clawport/agents.json`, make sure it's valid JSON. A syntax error will cause a silent fallback to the bundled registry. Test with:
    ```bash
-   cat $WORKSPACE_PATH/manor/agents.json | python3 -m json.tool
+   cat $WORKSPACE_PATH/clawport/agents.json | python3 -m json.tool
    ```
-3. **Check the server console** -- Manor UI logs errors to the terminal where `npm run dev` is running.
+3. **Check the server console** -- ClawPort logs errors to the terminal where `npm run dev` is running.
 
 ### Agent SOUL.md not loading
 
-The `soulPath` in your agents.json is relative to `WORKSPACE_PATH`. If your workspace is at `/Users/you/.openclaw/workspace` and `soulPath` is `"agents/vera/SOUL.md"`, Manor UI will look for `/Users/you/.openclaw/workspace/agents/vera/SOUL.md`.
+The `soulPath` in your agents.json is relative to `WORKSPACE_PATH`. If your workspace is at `/Users/you/.openclaw/workspace` and `soulPath` is `"agents/vera/SOUL.md"`, ClawPort will look for `/Users/you/.openclaw/workspace/agents/vera/SOUL.md`.
 
 Make sure the file exists at that path.
 
@@ -303,7 +303,7 @@ Image messages use the CLI pipeline (`openclaw gateway call chat.send`). Common 
 
 1. **`OPENCLAW_BIN` path is wrong** -- run `which openclaw` and update `.env.local`.
 2. **Gateway token is wrong** -- verify with `openclaw gateway status`.
-3. **Image too large** -- Manor UI resizes to 1200px max, but extremely large images may still hit limits. Try a smaller image.
+3. **Image too large** -- ClawPort resizes to 1200px max, but extremely large images may still hit limits. Try a smaller image.
 
 Check the server console for errors like `sendViaOpenClaw execFile error:` or `E2BIG`.
 
@@ -315,7 +315,7 @@ Audio transcription (speech-to-text) uses Whisper through the OpenClaw gateway a
 
 ### Port 3000 already in use
 
-Another process is using port 3000. Either stop it or run Manor UI on a different port:
+Another process is using port 3000. Either stop it or run ClawPort on a different port:
 
 ```bash
 npm run dev -- -p 3001

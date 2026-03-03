@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import type { Agent } from '@/lib/types'
 import {
-  type ManorSettings,
+  type ClawPortSettings,
   type AgentOverride,
   DEFAULTS,
   loadSettings,
@@ -19,12 +19,12 @@ interface AgentDisplay {
 }
 
 interface SettingsContextValue {
-  settings: ManorSettings
+  settings: ClawPortSettings
   setAccentColor: (color: string | null) => void
-  setManorName: (name: string | null) => void
-  setManorSubtitle: (subtitle: string | null) => void
-  setManorEmoji: (emoji: string | null) => void
-  setManorIcon: (icon: string | null) => void
+  setPortalName: (name: string | null) => void
+  setPortalSubtitle: (subtitle: string | null) => void
+  setPortalEmoji: (emoji: string | null) => void
+  setPortalIcon: (icon: string | null) => void
   setIconBgHidden: (hidden: boolean) => void
   setEmojiOnly: (emojiOnly: boolean) => void
   setOperatorName: (name: string | null) => void
@@ -35,12 +35,12 @@ interface SettingsContextValue {
 }
 
 const SettingsContext = createContext<SettingsContextValue>({
-  settings: { accentColor: null, manorName: null, manorSubtitle: null, manorEmoji: null, manorIcon: null, iconBgHidden: false, emojiOnly: false, operatorName: null, agentOverrides: {} },
+  settings: { accentColor: null, portalName: null, portalSubtitle: null, portalEmoji: null, portalIcon: null, iconBgHidden: false, emojiOnly: false, operatorName: null, agentOverrides: {} },
   setAccentColor: () => {},
-  setManorName: () => {},
-  setManorSubtitle: () => {},
-  setManorEmoji: () => {},
-  setManorIcon: () => {},
+  setPortalName: () => {},
+  setPortalSubtitle: () => {},
+  setPortalEmoji: () => {},
+  setPortalIcon: () => {},
   setIconBgHidden: () => {},
   setEmojiOnly: () => {},
   setOperatorName: () => {},
@@ -53,7 +53,7 @@ const SettingsContext = createContext<SettingsContextValue>({
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   // Initialize with defaults so server and client render the same HTML.
   // Hydrate from localStorage after mount to avoid hydration mismatch.
-  const [settings, setSettings] = useState<ManorSettings>({ ...DEFAULTS })
+  const [settings, setSettings] = useState<ClawPortSettings>({ ...DEFAULTS })
 
   useEffect(() => {
     setSettings(loadSettings())
@@ -73,7 +73,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     }
   }, [settings.accentColor])
 
-  const update = useCallback((next: ManorSettings) => {
+  const update = useCallback((next: ClawPortSettings) => {
     setSettings(next)
     saveSettings(next)
   }, [])
@@ -85,30 +85,30 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     [settings, update],
   )
 
-  const setManorName = useCallback(
+  const setPortalName = useCallback(
     (name: string | null) => {
-      update({ ...settings, manorName: name || null })
+      update({ ...settings, portalName: name || null })
     },
     [settings, update],
   )
 
-  const setManorSubtitle = useCallback(
+  const setPortalSubtitle = useCallback(
     (subtitle: string | null) => {
-      update({ ...settings, manorSubtitle: subtitle || null })
+      update({ ...settings, portalSubtitle: subtitle || null })
     },
     [settings, update],
   )
 
-  const setManorEmoji = useCallback(
+  const setPortalEmoji = useCallback(
     (emoji: string | null) => {
-      update({ ...settings, manorEmoji: emoji || null })
+      update({ ...settings, portalEmoji: emoji || null })
     },
     [settings, update],
   )
 
-  const setManorIcon = useCallback(
+  const setPortalIcon = useCallback(
     (icon: string | null) => {
-      update({ ...settings, manorIcon: icon })
+      update({ ...settings, portalIcon: icon })
     },
     [settings, update],
   )
@@ -169,12 +169,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   )
 
   const resetAll = useCallback(() => {
-    const defaults: ManorSettings = {
+    const defaults: ClawPortSettings = {
       accentColor: null,
-      manorName: null,
-      manorSubtitle: null,
-      manorEmoji: null,
-      manorIcon: null,
+      portalName: null,
+      portalSubtitle: null,
+      portalEmoji: null,
+      portalIcon: null,
       iconBgHidden: false,
       emojiOnly: false,
       operatorName: null,
@@ -188,10 +188,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       value={{
         settings,
         setAccentColor,
-        setManorName,
-        setManorSubtitle,
-        setManorEmoji,
-        setManorIcon,
+        setPortalName,
+        setPortalSubtitle,
+        setPortalEmoji,
+        setPortalIcon,
         setIconBgHidden,
         setEmojiOnly,
         setOperatorName,

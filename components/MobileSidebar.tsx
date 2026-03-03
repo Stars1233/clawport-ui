@@ -96,9 +96,9 @@ export function MobileSidebar({
 
         {/* App title */}
         <div className="flex items-center gap-2" style={{ flex: 1 }}>
-          {settings.manorIcon ? (
+          {settings.portalIcon ? (
             <img
-              src={settings.manorIcon}
+              src={settings.portalIcon}
               alt=""
               style={{
                 width: '24px',
@@ -124,7 +124,7 @@ export function MobileSidebar({
                 flexShrink: 0,
               }}
             >
-              {settings.manorEmoji ?? '\ud83c\udff0'}
+              {settings.portalEmoji ?? '\ud83c\udff0'}
             </span>
           )}
           <span
@@ -135,7 +135,7 @@ export function MobileSidebar({
               letterSpacing: '-0.2px',
             }}
           >
-            {settings.manorName ?? 'Agent Claw'} {settings.manorSubtitle ?? 'Command Centre'}
+            {settings.portalName ?? 'ClawPort'} {settings.portalSubtitle ?? 'Command Centre'}
           </span>
         </div>
       </header>
@@ -181,9 +181,9 @@ export function MobileSidebar({
         {/* App icon + title */}
         <div className="px-4 pt-5 pb-3">
           <div className="flex items-center gap-3">
-            {settings.manorIcon ? (
+            {settings.portalIcon ? (
               <img
-                src={settings.manorIcon}
+                src={settings.portalIcon}
                 alt=""
                 style={{
                   width: '36px',
@@ -211,7 +211,7 @@ export function MobileSidebar({
                   flexShrink: 0,
                 }}
               >
-                {settings.manorEmoji ?? '\ud83c\udff0'}
+                {settings.portalEmoji ?? '\ud83c\udff0'}
               </div>
             )}
             <div>
@@ -223,7 +223,7 @@ export function MobileSidebar({
                   color: 'var(--text-primary)',
                 }}
               >
-                {settings.manorName ?? 'Agent Claw'}
+                {settings.portalName ?? 'ClawPort'}
               </div>
               <div
                 style={{
@@ -232,7 +232,7 @@ export function MobileSidebar({
                   letterSpacing: '0.01em',
                 }}
               >
-                {settings.manorSubtitle ?? 'Command Centre'}
+                {settings.portalSubtitle ?? 'Command Centre'}
               </div>
             </div>
           </div>

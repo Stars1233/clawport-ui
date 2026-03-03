@@ -147,7 +147,7 @@ describe('agent registry loading', () => {
     expect(agents.length).toBe(bundledAgents.length)
   })
 
-  it('loads from workspace override when manor/agents.json exists', async () => {
+  it('loads from workspace override when clawport/agents.json exists', async () => {
     vi.stubEnv('WORKSPACE_PATH', '/tmp/test-workspace')
 
     const customAgents = [
@@ -168,11 +168,11 @@ describe('agent registry loading', () => {
     ]
 
     mockExistsSync.mockImplementation((path: string) => {
-      if (path === '/tmp/test-workspace/manor/agents.json') return true
+      if (path === '/tmp/test-workspace/clawport/agents.json') return true
       return false
     })
     mockReadFileSync.mockImplementation((path: string) => {
-      if (path === '/tmp/test-workspace/manor/agents.json') {
+      if (path === '/tmp/test-workspace/clawport/agents.json') {
         return JSON.stringify(customAgents)
       }
       throw new Error('ENOENT')
@@ -188,11 +188,11 @@ describe('agent registry loading', () => {
     vi.stubEnv('WORKSPACE_PATH', '/tmp/test-workspace')
 
     mockExistsSync.mockImplementation((path: string) => {
-      if (path === '/tmp/test-workspace/manor/agents.json') return true
+      if (path === '/tmp/test-workspace/clawport/agents.json') return true
       return false
     })
     mockReadFileSync.mockImplementation((path: string) => {
-      if (path === '/tmp/test-workspace/manor/agents.json') {
+      if (path === '/tmp/test-workspace/clawport/agents.json') {
         return '{ invalid json !!!'
       }
       throw new Error('ENOENT')
@@ -208,11 +208,11 @@ describe('agent registry loading', () => {
     vi.stubEnv('WORKSPACE_PATH', '/tmp/test-workspace')
 
     mockExistsSync.mockImplementation((path: string) => {
-      if (path === '/tmp/test-workspace/manor/agents.json') return true
+      if (path === '/tmp/test-workspace/clawport/agents.json') return true
       return false
     })
     mockReadFileSync.mockImplementation((path: string) => {
-      if (path === '/tmp/test-workspace/manor/agents.json') {
+      if (path === '/tmp/test-workspace/clawport/agents.json') {
         throw new Error('EACCES')
       }
       throw new Error('ENOENT')
@@ -279,7 +279,7 @@ describe('getAgents', () => {
     vi.stubEnv('WORKSPACE_PATH', '/tmp/ws')
     mockExistsSync.mockImplementation((path: string) => {
       // Only the SOUL file exists, not the workspace override
-      if (path === '/tmp/ws/manor/agents.json') return false
+      if (path === '/tmp/ws/clawport/agents.json') return false
       return true
     })
     mockReadFileSync.mockReturnValue('# Jarvis SOUL')
@@ -291,7 +291,7 @@ describe('getAgents', () => {
   it('sets soul to null when readFileSync throws', async () => {
     vi.stubEnv('WORKSPACE_PATH', '/tmp/ws')
     mockExistsSync.mockImplementation((path: string) => {
-      if (path === '/tmp/ws/manor/agents.json') return false
+      if (path === '/tmp/ws/clawport/agents.json') return false
       return true
     })
     mockReadFileSync.mockImplementation(() => { throw new Error('EACCES') })

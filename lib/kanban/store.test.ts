@@ -39,7 +39,7 @@ describe('loadTickets', () => {
 
   it('returns parsed data from localStorage', () => {
     const data = { 'id-1': { id: 'id-1', title: 'Test' } }
-    storage['manor-kanban'] = JSON.stringify(data)
+    storage['clawport-kanban'] = JSON.stringify(data)
     const loaded = loadTickets()
     expect(loaded['id-1'].id).toBe('id-1')
     expect(loaded['id-1'].title).toBe('Test')
@@ -50,7 +50,7 @@ describe('loadTickets', () => {
   })
 
   it('returns empty object on invalid JSON', () => {
-    storage['manor-kanban'] = 'not-json'
+    storage['clawport-kanban'] = 'not-json'
     expect(loadTickets()).toEqual({})
   })
 })
@@ -59,7 +59,7 @@ describe('saveTickets', () => {
   it('persists to localStorage', () => {
     const store: KanbanStore = {}
     saveTickets(store)
-    expect(storage['manor-kanban']).toBe('{}')
+    expect(storage['clawport-kanban']).toBe('{}')
   })
 })
 

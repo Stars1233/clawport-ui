@@ -74,8 +74,8 @@ interface OnboardingWizardProps {
 export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) {
   const {
     settings,
-    setManorName,
-    setManorSubtitle,
+    setPortalName,
+    setPortalSubtitle,
     setOperatorName,
     setAccentColor,
   } = useSettings()
@@ -99,13 +99,13 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
   // First-run detection
   useEffect(() => {
     if (forceOpen) {
-      setLocalName(settings.manorName ?? '')
-      setLocalSubtitle(settings.manorSubtitle ?? '')
+      setLocalName(settings.portalName ?? '')
+      setLocalSubtitle(settings.portalSubtitle ?? '')
       setLocalOperator(settings.operatorName ?? '')
       setVisible(true)
       return
     }
-    if (typeof window !== 'undefined' && !localStorage.getItem('manor-onboarded')) {
+    if (typeof window !== 'undefined' && !localStorage.getItem('clawport-onboarded')) {
       setVisible(true)
     }
   }, [forceOpen]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -168,8 +168,8 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
   const handleNext = useCallback(() => {
     // Commit values on step 2 (naming step)
     if (step === 2) {
-      setManorName(localName || null)
-      setManorSubtitle(localSubtitle || null)
+      setPortalName(localName || null)
+      setPortalSubtitle(localSubtitle || null)
       setOperatorName(localOperator || null)
     }
 
@@ -177,12 +177,12 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
       setStep(step + 1)
     } else {
       if (!forceOpen) {
-        localStorage.setItem('manor-onboarded', '1')
+        localStorage.setItem('clawport-onboarded', '1')
       }
       setVisible(false)
       onClose?.()
     }
-  }, [step, localName, localSubtitle, localOperator, forceOpen, onClose, setManorName, setManorSubtitle, setOperatorName])
+  }, [step, localName, localSubtitle, localOperator, forceOpen, onClose, setPortalName, setPortalSubtitle, setOperatorName])
 
   const handleBack = useCallback(() => {
     if (step > 0) setStep(step - 1)
@@ -259,7 +259,7 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
                 marginBottom: 'var(--space-3)',
                 lineHeight: 1,
               }}>
-                {settings.manorEmoji ?? '\ud83c\udff0'}
+                {settings.portalEmoji ?? '\ud83c\udff0'}
               </div>
               <h2 style={{
                 fontSize: 'var(--text-large-title)',
@@ -268,7 +268,7 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
                 color: 'var(--text-primary)',
                 marginBottom: 'var(--space-2)',
               }}>
-                Welcome to Agent Claw
+                Welcome to ClawPort
               </h2>
               <p style={{
                 fontSize: 'var(--text-body)',
@@ -573,7 +573,7 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
                   <input
                     type="text"
                     className="apple-input"
-                    placeholder="Agent Claw"
+                    placeholder="ClawPort"
                     value={localName}
                     onChange={e => setLocalName(e.target.value)}
                     autoFocus
@@ -664,7 +664,7 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
                     fontSize: 16,
                     flexShrink: 0,
                   }}>
-                    {settings.manorEmoji ?? '\ud83c\udff0'}
+                    {settings.portalEmoji ?? '\ud83c\udff0'}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
@@ -676,7 +676,7 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                     }}>
-                      {localName || 'Agent Claw'}
+                      {localName || 'ClawPort'}
                     </div>
                     <div style={{
                       fontSize: 'var(--text-caption2)',

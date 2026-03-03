@@ -7,7 +7,7 @@ import { DynamicFavicon } from '@/components/DynamicFavicon';
 import { OnboardingWizard } from '@/components/OnboardingWizard';
 
 export const metadata: Metadata = {
-  title: 'Agent Claw -- Command Centre',
+  title: 'ClawPort -- Command Centre',
   description: 'AI Agent Management Dashboard',
 };
 

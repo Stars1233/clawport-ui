@@ -1,6 +1,6 @@
-# Manor UI -- Theming, Settings & Customization Guide
+# ClawPort -- Theming, Settings & Customization Guide
 
-This document covers Manor UI's visual theming system, settings architecture, and step-by-step
+This document covers ClawPort's visual theming system, settings architecture, and step-by-step
 instructions for extending both. Everything is driven by CSS custom properties and two React
 context providers: `ThemeProvider` and `SettingsProvider`.
 
@@ -16,7 +16,7 @@ context providers: `ThemeProvider` and `SettingsProvider`.
    - [Theme-Specific Overrides](#theme-specific-overrides)
    - [How to Add a New Theme](#how-to-add-a-new-theme)
 2. [Settings](#settings)
-   - [ManorSettings Interface](#manorsettings-interface)
+   - [ClawPortSettings Interface](#clawportsettings-interface)
    - [localStorage Persistence](#localstorage-persistence)
    - [SettingsProvider API](#settingsprovider-api)
    - [Accent Color CSS Variables](#accent-color-css-variables)
@@ -34,7 +34,7 @@ context providers: `ThemeProvider` and `SettingsProvider`.
 
 ### Available Themes
 
-Manor ships with five themes. Each has an ID, a human-readable label, and an emoji used in the
+ClawPort ships with five themes. Each has an ID, a human-readable label, and an emoji used in the
 onboarding wizard and theme picker.
 
 | ID       | Label    | Emoji | Description                                |
@@ -72,7 +72,7 @@ The theme system uses three layers:
    or utility classes. No Tailwind color classes are used directly.
 
 3. **ThemeProvider** (`app/providers.tsx`) -- A React context that manages theme state. On mount
-   it reads from `localStorage` key `manor-theme`. When the user picks a theme, it:
+   it reads from `localStorage` key `clawport-theme`. When the user picks a theme, it:
    - Updates React state
    - Writes to `localStorage`
    - Removes the existing `data-theme` attribute
@@ -84,7 +84,7 @@ The theme system uses three layers:
 // app/providers.tsx (simplified)
 function apply(t: ThemeId) {
   setThemeState(t);
-  localStorage.setItem('manor-theme', t);
+  localStorage.setItem('clawport-theme', t);
   const html = document.documentElement;
   html.removeAttribute('data-theme');
   if (t === 'system') {
@@ -301,7 +301,7 @@ The `system` theme has two layers:
    explicit theme.
 
 Note: There is currently no `matchMedia` listener for live OS theme changes. If the user
-switches their OS theme while Manor is open, they need to re-select `system` or reload.
+switches their OS theme while ClawPort is open, they need to re-select `system` or reload.
 
 ### Theme-Specific Overrides
 
@@ -383,7 +383,7 @@ modifies React Flow edge stroke:
 
 ## Settings
 
-### ManorSettings Interface
+### ClawPortSettings Interface
 
 Defined in `lib/settings.ts`:
 
@@ -393,12 +393,12 @@ export interface AgentOverride {
   profileImage?: string // base64 data URL
 }
 
-export interface ManorSettings {
+export interface ClawPortSettings {
   accentColor: string | null
-  manorName: string | null
-  manorSubtitle: string | null
-  manorEmoji: string | null
-  manorIcon: string | null       // base64 data URL for custom icon image
+  portalName: string | null
+  portalSubtitle: string | null
+  portalEmoji: string | null
+  portalIcon: string | null       // base64 data URL for custom icon image
   iconBgHidden: boolean          // hide colored background on sidebar logo
   emojiOnly: boolean             // show emoji avatars without colored background
   operatorName: string | null
@@ -409,10 +409,10 @@ export interface ManorSettings {
 | Field            | Type                              | Default | Description |
 |------------------|-----------------------------------|---------|-------------|
 | `accentColor`    | `string \| null`                  | `null`  | Hex color string (e.g., `"#3B82F6"`). When `null`, the theme's built-in `--accent` is used. |
-| `manorName`      | `string \| null`                  | `null`  | Custom name displayed in the sidebar header. Falls back to "Manor". |
-| `manorSubtitle`  | `string \| null`                  | `null`  | Subtitle below the name. Falls back to "Command Centre". |
-| `manorEmoji`     | `string \| null`                  | `null`  | Emoji displayed in the sidebar logo. Falls back to the castle emoji. |
-| `manorIcon`      | `string \| null`                  | `null`  | Base64 JPEG data URL for a custom sidebar icon image. Overrides the emoji when set. |
+| `portalName`      | `string \| null`                  | `null`  | Custom name displayed in the sidebar header. Falls back to "ClawPort". |
+| `portalSubtitle`  | `string \| null`                  | `null`  | Subtitle below the name. Falls back to "Command Centre". |
+| `portalEmoji`     | `string \| null`                  | `null`  | Emoji displayed in the sidebar logo. Falls back to the castle emoji. |
+| `portalIcon`      | `string \| null`                  | `null`  | Base64 JPEG data URL for a custom sidebar icon image. Overrides the emoji when set. |
 | `iconBgHidden`   | `boolean`                         | `false` | When `true`, removes the colored gradient background behind the sidebar logo emoji. |
 | `emojiOnly`      | `boolean`                         | `false` | When `true`, agent avatars show just the emoji without a colored circle background. |
 | `operatorName`   | `string \| null`                  | `null`  | The human operator's name. Displayed in the sidebar and injected into the chat system prompt. |
@@ -420,16 +420,16 @@ export interface ManorSettings {
 
 ### localStorage Persistence
 
-Settings are stored under the key `'manor-settings'` as a JSON string.
+Settings are stored under the key `'clawport-settings'` as a JSON string.
 
 ```
-localStorage key: 'manor-settings'
-Format: JSON-serialized ManorSettings object
+localStorage key: 'clawport-settings'
+Format: JSON-serialized ClawPortSettings object
 ```
 
-Theme is stored separately under key `'manor-theme'` (managed by ThemeProvider).
+Theme is stored separately under key `'clawport-theme'` (managed by ThemeProvider).
 
-Onboarding completion is tracked under key `'manor-onboarded'` (value `'1'`).
+Onboarding completion is tracked under key `'clawport-onboarded'` (value `'1'`).
 
 **Load behavior** (`loadSettings()`):
 
@@ -452,12 +452,12 @@ mutations via React context. Access it with the `useSettings()` hook.
 import { useSettings } from '@/app/settings-provider';
 
 const {
-  settings,              // ManorSettings (read-only snapshot)
+  settings,              // ClawPortSettings (read-only snapshot)
   setAccentColor,        // (color: string | null) => void
-  setManorName,          // (name: string | null) => void
-  setManorSubtitle,      // (subtitle: string | null) => void
-  setManorEmoji,         // (emoji: string | null) => void
-  setManorIcon,          // (icon: string | null) => void
+  setPortalName,          // (name: string | null) => void
+  setPortalSubtitle,      // (subtitle: string | null) => void
+  setPortalEmoji,         // (emoji: string | null) => void
+  setPortalIcon,          // (icon: string | null) => void
   setIconBgHidden,       // (hidden: boolean) => void
   setEmojiOnly,          // (emojiOnly: boolean) => void
   setOperatorName,       // (name: string | null) => void
@@ -473,10 +473,10 @@ const {
 | Function              | Signature                                        | Behavior |
 |-----------------------|--------------------------------------------------|----------|
 | `setAccentColor`      | `(color: string \| null) => void`                | Sets the accent color. Pass `null` to revert to the theme default. Triggers a `useEffect` that applies `--accent` and `--accent-fill` as inline styles on `<html>`. |
-| `setManorName`        | `(name: string \| null) => void`                 | Sets sidebar name. Empty string coerced to `null`. |
-| `setManorSubtitle`    | `(subtitle: string \| null) => void`             | Sets sidebar subtitle. Empty string coerced to `null`. |
-| `setManorEmoji`       | `(emoji: string \| null) => void`                | Sets sidebar logo emoji. Empty string coerced to `null`. |
-| `setManorIcon`        | `(icon: string \| null) => void`                 | Sets sidebar icon image (base64 data URL). Pass `null` to remove. |
+| `setPortalName`        | `(name: string \| null) => void`                 | Sets sidebar name. Empty string coerced to `null`. |
+| `setPortalSubtitle`    | `(subtitle: string \| null) => void`             | Sets sidebar subtitle. Empty string coerced to `null`. |
+| `setPortalEmoji`       | `(emoji: string \| null) => void`                | Sets sidebar logo emoji. Empty string coerced to `null`. |
+| `setPortalIcon`        | `(icon: string \| null) => void`                 | Sets sidebar icon image (base64 data URL). Pass `null` to remove. |
 | `setIconBgHidden`     | `(hidden: boolean) => void`                      | Toggles the colored background behind the sidebar logo emoji. |
 | `setEmojiOnly`        | `(emojiOnly: boolean) => void`                   | Toggles emoji-only avatar mode across the entire app. |
 | `setOperatorName`     | `(name: string \| null) => void`                 | Sets the operator's name. Empty string coerced to `null`. |
@@ -630,10 +630,10 @@ settings will not be affected (their inline style override takes precedence).
 
 Follow this sequence to add a new boolean setting called `compactMode`:
 
-**Step 1: Types** -- Add the field to `ManorSettings` in `lib/settings.ts`:
+**Step 1: Types** -- Add the field to `ClawPortSettings` in `lib/settings.ts`:
 
 ```ts
-export interface ManorSettings {
+export interface ClawPortSettings {
   // ...existing fields
   compactMode: boolean
 }
@@ -642,7 +642,7 @@ export interface ManorSettings {
 **Step 2: Defaults** -- Add the default value:
 
 ```ts
-export const DEFAULTS: ManorSettings = {
+export const DEFAULTS: ClawPortSettings = {
   // ...existing defaults
   compactMode: false,
 }
@@ -745,7 +745,7 @@ e. Update `resetAll` to include the new field.
 
 ### CSS Custom Property Naming Conventions
 
-Manor follows a consistent naming pattern for all CSS variables:
+ClawPort follows a consistent naming pattern for all CSS variables:
 
 | Prefix        | Category                       | Examples                           |
 |---------------|--------------------------------|------------------------------------|
@@ -789,7 +789,7 @@ Manor follows a consistent naming pattern for all CSS variables:
 | `app/globals.css`              | All CSS custom properties, theme definitions, keyframes, utility classes |
 | `lib/themes.ts`                | Theme IDs, labels, emojis (`THEMES` array and `ThemeId` type) |
 | `app/providers.tsx`            | `ThemeProvider` -- manages `data-theme` attribute and localStorage |
-| `lib/settings.ts`              | `ManorSettings` interface, `DEFAULTS`, `loadSettings()`, `saveSettings()`, `hexToAccentFill()` |
+| `lib/settings.ts`              | `ClawPortSettings` interface, `DEFAULTS`, `loadSettings()`, `saveSettings()`, `hexToAccentFill()` |
 | `app/settings-provider.tsx`    | `SettingsProvider` -- all setter callbacks, accent color CSS variable application |
 | `app/settings/page.tsx`        | Settings UI -- accent color, branding, agent customization, reset |
 | `components/OnboardingWizard.tsx` | First-run wizard -- applies theme, accent color, and branding settings |

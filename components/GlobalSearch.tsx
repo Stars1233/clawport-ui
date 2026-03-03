@@ -137,8 +137,8 @@ export function GlobalSearch() {
     function handleOpenSearch() {
       setOpen(true);
     }
-    window.addEventListener('manor:open-search', handleOpenSearch);
-    return () => window.removeEventListener('manor:open-search', handleOpenSearch);
+    window.addEventListener('clawport:open-search', handleOpenSearch);
+    return () => window.removeEventListener('clawport:open-search', handleOpenSearch);
   }, []);
 
   // -----------------------------------------------------------------------
@@ -346,7 +346,7 @@ export function GlobalSearch() {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Search Agent Claw"
+        aria-label="Search ClawPort"
         className="animate-scale-in"
         onKeyDown={handleKeyDown}
         style={{
@@ -386,8 +386,8 @@ export function GlobalSearch() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search Agent Claw..."
-            aria-label="Search Agent Claw"
+            placeholder="Search ClawPort..."
+            aria-label="Search ClawPort"
             style={{
               flex: 1,
               background: 'transparent',

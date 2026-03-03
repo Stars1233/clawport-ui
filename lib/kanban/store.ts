@@ -4,7 +4,7 @@ import type { KanbanTicket, TicketStatus } from './types'
 
 export type KanbanStore = Record<string, KanbanTicket>
 
-const STORAGE_KEY = 'manor-kanban'
+const STORAGE_KEY = 'clawport-kanban'
 
 export function loadTickets(): KanbanStore {
   if (typeof window === 'undefined') return {}

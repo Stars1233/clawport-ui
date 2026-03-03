@@ -5,14 +5,14 @@ import { useSettings } from '@/app/settings-provider'
 
 /**
  * Dynamically sets the browser tab favicon based on the current
- * manor logo settings (uploaded image or emoji).
+ * portal logo settings (uploaded image or emoji).
  */
 export function DynamicFavicon() {
   const { settings } = useSettings()
 
   useEffect(() => {
-    const emoji = settings.manorEmoji ?? '\ud83c\udff0'
-    const icon = settings.manorIcon
+    const emoji = settings.portalEmoji ?? '\ud83c\udff0'
+    const icon = settings.portalIcon
     const accentColor = settings.accentColor
     const bgHidden = settings.iconBgHidden
 
@@ -56,7 +56,7 @@ export function DynamicFavicon() {
 
     link.href = canvas.toDataURL('image/png')
     link.type = 'image/png'
-  }, [settings.manorIcon, settings.manorEmoji, settings.accentColor, settings.iconBgHidden])
+  }, [settings.portalIcon, settings.portalEmoji, settings.accentColor, settings.iconBgHidden])
 
   return null
 }

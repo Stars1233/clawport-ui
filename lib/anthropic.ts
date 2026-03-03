@@ -118,8 +118,8 @@ export async function sendViaOpenClaw(opts: {
   timeoutMs?: number
 }): Promise<string | null> {
   const openclawBin = process.env.OPENCLAW_BIN || 'openclaw'
-  const sessionKey = opts.sessionKey || 'agent:main:manor-ui'
-  const idempotencyKey = `manor-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  const sessionKey = opts.sessionKey || 'agent:main:clawport'
+  const idempotencyKey = `clawport-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
   const timeoutMs = opts.timeoutMs || 60000
   const token = opts.gatewayToken
 
