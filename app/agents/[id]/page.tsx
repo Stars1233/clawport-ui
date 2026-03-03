@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import type { Agent, CronJob } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ErrorState } from "@/components/ErrorState"
+import { AgentAvatar } from "@/components/AgentAvatar"
 
 const TOOL_ICONS: Record<string, string> = {
   web_search: "\uD83D\uDD0D",
@@ -364,21 +365,7 @@ export default function AgentDetailPage({
       >
         {/* ── Hero section ── */}
         <div className="flex items-start gap-4">
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: 16,
-              background: `${agent.color}26`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 32,
-              flexShrink: 0,
-            }}
-          >
-            {agent.emoji}
-          </div>
+          <AgentAvatar agent={agent} size={64} borderRadius={16} />
           <div>
             <h1
               style={{

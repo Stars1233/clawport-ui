@@ -11,6 +11,7 @@ import { transcribe } from '@/lib/transcribe'
 import { VoiceMessage } from './VoiceMessage'
 import { FileAttachment } from './FileAttachment'
 import { MediaPreview } from './MediaPreview'
+import { AgentAvatar } from '@/components/AgentAvatar'
 
 interface ConversationViewProps {
   agent: Agent
@@ -760,20 +761,7 @@ export function ConversationView({ agent, conversation, onUpdate, onBack }: Conv
           flex: 1,
           minWidth: 0,
         }}>
-          <div style={{
-            width: 32,
-            height: 32,
-            borderRadius: '50%',
-            background: `linear-gradient(135deg, ${agent.color}cc, ${agent.color}55)`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 14,
-            flexShrink: 0,
-            border: `1px solid ${agent.color}44`,
-          }}>
-            {agent.emoji}
-          </div>
+          <AgentAvatar agent={agent} size={32} borderRadius={16} />
           <div style={{ minWidth: 0 }}>
             <div style={{
               fontSize: 'var(--text-subheadline)',
@@ -966,19 +954,7 @@ export function ConversationView({ agent, conversation, onUpdate, onBack }: Conv
                     marginRight: 'var(--space-2)',
                   }}>
                     {showAvatar ? (
-                      <div style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: '50%',
-                        background: `linear-gradient(135deg, ${agent.color}cc, ${agent.color}55)`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 13,
-                        border: `1px solid ${agent.color}44`,
-                      }}>
-                        {agent.emoji}
-                      </div>
+                      <AgentAvatar agent={agent} size={28} borderRadius={14} />
                     ) : <div style={{ width: 28 }} />}
                   </div>
 

@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react'
 import type { Agent } from '@/lib/types'
 import type { TicketPriority, TeamRole } from '@/lib/kanban/types'
 import { PRIORITY_COLORS, ROLE_LABELS } from '@/lib/kanban/types'
+import { AgentPicker } from '@/components/kanban/AgentPicker'
 import {
   Dialog,
   DialogContent,
@@ -232,7 +233,6 @@ export function CreateTicketModal({
           {/* Assignee */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
             <label
-              htmlFor="ticket-assignee"
               style={{
                 fontSize: 'var(--text-caption1)',
                 fontWeight: 'var(--weight-medium)',
@@ -241,34 +241,17 @@ export function CreateTicketModal({
             >
               Assignee
             </label>
-            <select
-              id="ticket-assignee"
-              className="apple-input focus-ring"
+            <AgentPicker
+              agents={agents}
               value={form.assigneeId}
-              onChange={(e) =>
+              onChange={(agentId) =>
                 setForm((f) => ({
                   ...f,
-                  assigneeId: e.target.value,
-                  assigneeRole: e.target.value ? f.assigneeRole : null,
+                  assigneeId: agentId,
+                  assigneeRole: agentId ? f.assigneeRole : null,
                 }))
               }
-              style={{
-                fontSize: 'var(--text-body)',
-                color: form.assigneeId ? 'var(--text-primary)' : 'var(--text-tertiary)',
-                appearance: 'none',
-                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'right 12px center',
-                paddingRight: 36,
-              }}
-            >
-              <option value="">Unassigned</option>
-              {agents.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.emoji} {a.name}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           {/* Role (only shown when assignee is selected) */}

@@ -34,6 +34,7 @@ const NAV_ITEMS: NavItem[] = [
 export function NavLinks() {
   const pathname = usePathname();
   const [agentCount, setAgentCount] = useState<number | null>(null);
+  const [cronCount, setCronCount] = useState<number | null>(null);
   const [cronErrorCount, setCronErrorCount] = useState<number | null>(null);
 
   // Fetch agent count
@@ -62,8 +63,9 @@ export function NavLinks() {
       })
       .then((data: unknown) => {
         if (Array.isArray(data)) {
-          const errors = (data as CronJob[]).filter((c) => c.status === 'error');
-          setCronErrorCount(errors.length);
+          const crons = data as CronJob[];
+          setCronCount(crons.length);
+          setCronErrorCount(crons.filter((c) => c.status === 'error').length);
         }
       })
       .catch(() => {
@@ -92,21 +94,46 @@ export function NavLinks() {
         </span>
       );
     }
-    if (item.badge === 'errors' && cronErrorCount !== null && cronErrorCount > 0) {
+    if (item.badge === 'errors' && cronCount !== null) {
+      const hasErrors = cronErrorCount !== null && cronErrorCount > 0;
       return (
         <span
-          className="nav-badge-error"
-          aria-label={`${cronErrorCount} cron error${cronErrorCount > 1 ? 's' : ''}`}
           style={{
             marginLeft: 'auto',
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            background: 'var(--system-red)',
-            flexShrink: 0,
-            animation: 'pulse-red 1.5s ease-in-out infinite',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
           }}
-        />
+        >
+          <span
+            className="nav-badge"
+            style={{
+              fontSize: '10px',
+              fontFamily: 'var(--font-mono)',
+              padding: '1px 6px',
+              borderRadius: 'var(--radius-sm)',
+              background: hasErrors ? 'rgba(255,69,58,0.1)' : 'var(--fill-quaternary)',
+              color: hasErrors ? 'var(--system-red)' : 'var(--text-tertiary)',
+              lineHeight: '16px',
+              fontWeight: hasErrors ? 600 : undefined,
+            }}
+          >
+            {hasErrors ? `${cronErrorCount} err` : cronCount}
+          </span>
+          {hasErrors && (
+            <span
+              aria-label={`${cronErrorCount} cron error${cronErrorCount > 1 ? 's' : ''}`}
+              style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                background: 'var(--system-red)',
+                flexShrink: 0,
+                animation: 'pulse-red 1.5s ease-in-out infinite',
+              }}
+            />
+          )}
+        </span>
       );
     }
     return null;

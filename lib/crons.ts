@@ -1,5 +1,6 @@
-import { CronJob } from '@/lib/types'
+import { CronJob, CronDelivery } from '@/lib/types'
 import { execSync } from 'child_process'
+import { parseSchedule, describeCron } from './cron-utils'
 
 const OPENCLAW_BIN = process.env.OPENCLAW_BIN || '/Users/johnrice/.nvm/versions/node/v22.14.0/bin/openclaw'
 
@@ -45,7 +46,7 @@ export async function getCrons(): Promise<CronJob[]> {
       const j = job as Record<string, unknown>
       const state = (j.state as Record<string, unknown>) || {}
       const name = String(j.name || '')
-      const schedule = String(j.schedule || '')
+      const { expression: schedule, timezone } = parseSchedule(j.schedule)
 
       // Status can be in state.status or directly on j.status
       const rawStatus = state.status ?? j.status ?? ''
@@ -70,15 +71,39 @@ export async function getCrons(): Promise<CronJob[]> {
 
       const lastError = (state.lastError ?? state.error ?? j.lastError) ? String(state.lastError ?? state.error ?? j.lastError) : null
 
+      // Delivery config
+      const rawDelivery = j.delivery as Record<string, unknown> | undefined
+      let delivery: CronDelivery | null = null
+      if (rawDelivery && typeof rawDelivery === 'object') {
+        delivery = {
+          mode: String(rawDelivery.mode || ''),
+          channel: String(rawDelivery.channel || ''),
+          to: rawDelivery.to ? String(rawDelivery.to) : null,
+        }
+      }
+
+      // Rich state fields
+      const lastDurationMs = typeof state.lastDurationMs === 'number' ? state.lastDurationMs : null
+      const consecutiveErrors = typeof state.consecutiveErrors === 'number' ? state.consecutiveErrors : 0
+      const lastDeliveryStatus = typeof state.lastDeliveryStatus === 'string' ? state.lastDeliveryStatus : null
+
       return {
         id: String(j.id || j.name || ''),
         name,
         schedule,
+        scheduleDescription: describeCron(schedule),
+        timezone,
         status,
         lastRun,
         nextRun,
         lastError,
         agentId: matchAgent(name),
+        description: typeof j.description === 'string' ? j.description : null,
+        enabled: j.enabled !== false,
+        delivery,
+        lastDurationMs,
+        consecutiveErrors,
+        lastDeliveryStatus,
       }
     })
   } catch (err) {

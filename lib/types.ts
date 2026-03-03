@@ -17,15 +17,39 @@ export interface Agent {
   description: string      // one-liner description
 }
 
+export interface CronDelivery {
+  mode: string
+  channel: string
+  to: string | null
+}
+
+export interface CronRun {
+  ts: number
+  jobId: string
+  status: 'ok' | 'error'
+  summary: string | null
+  error: string | null
+  durationMs: number
+  deliveryStatus: string | null
+}
+
 export interface CronJob {
   id: string
   name: string
-  schedule: string
+  schedule: string              // raw cron expression
+  scheduleDescription: string   // human-readable (e.g., "Daily at 8 AM")
+  timezone: string | null       // extracted from schedule object if present
   status: 'ok' | 'error' | 'idle'
   lastRun: string | null
   nextRun: string | null
   lastError: string | null
-  agentId: string | null   // which agent this belongs to (matched by name)
+  agentId: string | null        // which agent this belongs to (matched by name)
+  description: string | null
+  enabled: boolean
+  delivery: CronDelivery | null
+  lastDurationMs: number | null
+  consecutiveErrors: number
+  lastDeliveryStatus: string | null
 }
 
 export interface ChatMessage {

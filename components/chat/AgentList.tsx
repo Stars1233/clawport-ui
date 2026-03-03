@@ -3,6 +3,7 @@ import { useState } from 'react'
 import type { Agent } from '@/lib/types'
 import type { ConversationStore } from '@/lib/conversations'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AgentAvatar } from '@/components/AgentAvatar'
 
 interface AgentListProps {
   agents: Agent[]
@@ -196,19 +197,7 @@ export function AgentList({ agents, conversations, activeId, onSelect, loading }
               >
                 {/* Avatar */}
                 <div style={{ position: 'relative', flexShrink: 0 }}>
-                  <div style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: '50%',
-                    background: `linear-gradient(135deg, ${agent.color}cc, ${agent.color}55)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 18,
-                    border: `1.5px solid ${agent.color}44`,
-                  }}>
-                    {agent.emoji}
-                  </div>
+                  <AgentAvatar agent={agent} size={40} borderRadius={20} />
                   {/* Online dot */}
                   <div style={{
                     position: 'absolute',
@@ -457,19 +446,7 @@ export function AgentListMobile({
               >
                 {/* Avatar */}
                 <div style={{ position: 'relative', flexShrink: 0 }}>
-                  <div style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: '50%',
-                    background: `linear-gradient(135deg, ${agent.color}cc, ${agent.color}55)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 20,
-                    border: `1.5px solid ${agent.color}44`,
-                  }}>
-                    {agent.emoji}
-                  </div>
+                  <AgentAvatar agent={agent} size={44} borderRadius={22} />
                   <div style={{
                     position: 'absolute',
                     bottom: 0,

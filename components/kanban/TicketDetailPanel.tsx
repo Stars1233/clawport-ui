@@ -1,9 +1,11 @@
 'use client'
 
 import React, { useEffect, useRef, useState, useCallback } from 'react'
+import { Maximize2, Minimize2 } from 'lucide-react'
 import type { Agent } from '@/lib/types'
 import type { KanbanTicket, TicketStatus, TicketPriority } from '@/lib/kanban/types'
 import { PRIORITY_COLORS, ROLE_LABELS, COLUMNS } from '@/lib/kanban/types'
+import { AgentAvatar } from '@/components/AgentAvatar'
 
 /* ── Chat message type (local to kanban) ─────────────── */
 
@@ -225,6 +227,7 @@ export function TicketDetailPanel({
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
@@ -382,8 +385,9 @@ export function TicketDetailPanel({
         className="h-full flex flex-col ml-auto"
         style={{
           width: '100%',
-          maxWidth: 420,
+          maxWidth: expanded ? 680 : 420,
           flexShrink: 0,
+          transition: 'max-width 200ms var(--ease-smooth)',
           background: 'var(--material-regular)',
           backdropFilter: 'var(--sidebar-backdrop)',
           WebkitBackdropFilter: 'var(--sidebar-backdrop)',
@@ -397,12 +401,33 @@ export function TicketDetailPanel({
 
         {/* Scrollable top section */}
         <div style={{ flex: '0 0 auto', overflowY: 'auto', maxHeight: ticket.workResult ? '55%' : '45%' }}>
-          {/* Close button */}
+          {/* Panel controls */}
           <div style={{
             padding: 'var(--space-4) var(--space-5) 0',
             display: 'flex',
             justifyContent: 'flex-end',
+            gap: 'var(--space-2)',
           }}>
+            <button
+              onClick={() => setExpanded(e => !e)}
+              className="focus-ring"
+              aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'var(--fill-secondary)',
+                color: 'var(--text-secondary)',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 150ms var(--ease-spring)',
+              }}
+            >
+              {expanded ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+            </button>
             <button
               ref={closeRef}
               onClick={onClose}
@@ -460,19 +485,7 @@ export function TicketDetailPanel({
                 fontSize: 'var(--text-footnote)',
                 color: 'var(--text-secondary)',
               }}>
-                <span style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 7,
-                  background: `${agent.color}26`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 13,
-                  flexShrink: 0,
-                }}>
-                  {agent.emoji}
-                </span>
+                <AgentAvatar agent={agent} size={24} borderRadius={7} />
                 <span>{agent.name}</span>
                 {ticket.assigneeRole && (
                   <span style={{ color: 'var(--text-tertiary)' }}>

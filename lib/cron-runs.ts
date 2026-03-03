@@ -1,0 +1,68 @@
+import { CronRun } from '@/lib/types'
+import { readFileSync, readdirSync, existsSync } from 'fs'
+import path from 'path'
+
+const WORKSPACE_PATH = process.env.WORKSPACE_PATH || '/Users/johnrice/.openclaw/workspace'
+
+/** Derive the cron runs directory from WORKSPACE_PATH (go up from workspace to .openclaw/cron/runs) */
+function getRunsDir(): string {
+  return path.resolve(WORKSPACE_PATH, '..', 'cron', 'runs')
+}
+
+/**
+ * Parse a single JSONL line into a CronRun.
+ * Returns null if the line can't be parsed or is not a "finished" action.
+ */
+function parseLine(line: string): CronRun | null {
+  if (!line.trim()) return null
+  try {
+    const obj = JSON.parse(line)
+    if (obj.action && obj.action !== 'finished') return null
+    return {
+      ts: typeof obj.ts === 'number' ? obj.ts : 0,
+      jobId: String(obj.jobId || ''),
+      status: obj.status === 'ok' ? 'ok' : 'error',
+      summary: typeof obj.summary === 'string' ? obj.summary : null,
+      error: typeof obj.error === 'string' ? obj.error : null,
+      durationMs: typeof obj.durationMs === 'number' ? obj.durationMs : 0,
+      deliveryStatus: typeof obj.deliveryStatus === 'string' ? obj.deliveryStatus : null,
+    }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Read JSONL run history files. Returns CronRun[] sorted newest-first.
+ * If jobId is provided, reads only that job's file. Otherwise reads all files.
+ */
+export function getCronRuns(jobId?: string): CronRun[] {
+  const runsDir = getRunsDir()
+  if (!existsSync(runsDir)) return []
+
+  let files: string[]
+  if (jobId) {
+    const filePath = path.join(runsDir, `${jobId}.jsonl`)
+    files = existsSync(filePath) ? [filePath] : []
+  } else {
+    files = readdirSync(runsDir)
+      .filter(f => f.endsWith('.jsonl'))
+      .map(f => path.join(runsDir, f))
+  }
+
+  const runs: CronRun[] = []
+  for (const filePath of files) {
+    try {
+      const content = readFileSync(filePath, 'utf-8')
+      for (const line of content.split('\n')) {
+        const run = parseLine(line)
+        if (run) runs.push(run)
+      }
+    } catch {
+      // Skip unreadable files
+    }
+  }
+
+  runs.sort((a, b) => b.ts - a.ts)
+  return runs
+}
