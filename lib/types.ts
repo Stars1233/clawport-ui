@@ -130,3 +130,35 @@ export interface MemoryApiResponse {
   status: MemoryStatus
   stats: MemoryStats
 }
+
+// ── Activity Console Types ─────────────────────────────────────
+
+export interface LogEntry {
+  id: string
+  ts: number
+  source: 'cron' | 'config'
+  level: 'info' | 'warn' | 'error'
+  category: string
+  summary: string
+  agentId: string | null
+  jobId: string | null
+  durationMs: number | null
+  details: Record<string, unknown>
+}
+
+export interface LogSummary {
+  totalEntries: number
+  errorCount: number
+  sources: { cron: number; config: number }
+  timeRange: { oldest: number; newest: number } | null
+  recentErrors: LogEntry[]
+}
+
+export type LogFilter = 'all' | 'error' | 'config' | 'cron'
+
+export interface LiveLogLine {
+  type: 'log' | 'meta'
+  time: string
+  level: string
+  message: string
+}
