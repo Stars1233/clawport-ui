@@ -6,6 +6,7 @@ import { useSettings } from '@/app/settings-provider'
 import { useTheme } from '@/app/providers'
 import { THEMES } from '@/lib/themes'
 import type { ThemeId } from '@/lib/themes'
+import { fetchOnboarded, syncOnboarded } from '@/lib/conversations'
 
 // ---------------------------------------------------------------------------
 // Accent color presets (same as settings page)
@@ -105,8 +106,16 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
       setVisible(true)
       return
     }
-    if (typeof window !== 'undefined' && !localStorage.getItem('clawport-onboarded')) {
-      setVisible(true)
+    if (typeof window !== 'undefined') {
+      if (localStorage.getItem('clawport-onboarded')) return
+      // Check server-side flag before showing wizard
+      fetchOnboarded().then(onboarded => {
+        if (onboarded) {
+          localStorage.setItem('clawport-onboarded', '1')
+        } else {
+          setVisible(true)
+        }
+      })
     }
   }, [forceOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -181,6 +190,7 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
     } else {
       if (!forceOpen) {
         localStorage.setItem('clawport-onboarded', '1')
+        syncOnboarded(true)
       }
       setVisible(false)
       onClose?.()
