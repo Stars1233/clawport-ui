@@ -164,15 +164,24 @@ export function OnboardingWizard({ forceOpen, onClose }: OnboardingWizardProps) 
 
     // Check crons (validates gateway + openclaw binary)
     fetch('/api/crons')
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      .then(async r => {
+        if (!r.ok) {
+          const body = await r.json().catch(() => null)
+          const serverMsg = body?.error
+          throw new Error(serverMsg || `HTTP ${r.status}`)
+        }
         return r.json()
       })
       .then(() => {
         setCronsStatus('ok')
       })
-      .catch(() => {
-        setCronsError('Could not reach OpenClaw gateway. Run: openclaw gateway run')
+      .catch((err: Error) => {
+        const msg = err.message || ''
+        if (msg.includes('Failed to fetch cron') || msg.includes('JSON') || msg.includes('Unexpected token')) {
+          setCronsError('Cron list failed -- OpenClaw CLI may be printing log output before JSON. Try: OPENCLAW_LOG_LEVEL=error clawport dev')
+        } else {
+          setCronsError('Could not reach OpenClaw gateway. Run: openclaw gateway run')
+        }
         setCronsStatus('error')
       })
   }

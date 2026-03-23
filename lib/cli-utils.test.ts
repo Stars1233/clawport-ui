@@ -41,4 +41,20 @@ hooks: Unrecognized key: "allowedAgentIds"
   it('throws on empty string', () => {
     expect(() => extractJson('')).toThrow()
   })
+
+  it('skips bracketed log lines like [plugins] before real JSON', () => {
+    const raw = `[plugins] [debug] Database schema initialized
+[plugins] [debug] Loading context engine
+{"jobs":[{"name":"daily-report","schedule":"0 8 * * *"}]}`
+    const result = extractJson(raw) as Record<string, unknown>
+    expect(result.jobs).toEqual([{ name: 'daily-report', schedule: '0 8 * * *' }])
+  })
+
+  it('skips bracketed log lines before JSON array', () => {
+    const raw = `[plugins] [debug] Database schema initialized
+[plugins] [info] Ready
+[{"id":"pulse","name":"daily-pulse"}]`
+    const result = extractJson(raw)
+    expect(result).toEqual([{ id: 'pulse', name: 'daily-pulse' }])
+  })
 })
